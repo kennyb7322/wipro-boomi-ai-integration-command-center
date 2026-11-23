@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Wipro · Boomi AI & Intelligent Integration Command Center — role crosswalk, integration lifecycle, AI integration patterns, agentic integration and controls.">
+<meta name="author" content="Kenneth P. Barnes · UCS Solutions">
+<title>Wipro · Boomi AI &amp; Intelligent Integration Command Center {{VERSION}}</title>
+<script>
+/* no-flash theme bootstrap */
+(function () {
+  try {
+    var t = localStorage.getItem('ucs-boomi-cc-theme');
+    if (t === 'light' || t === 'dark') { document.documentElement.setAttribute('data-theme', t); }
+  } catch (e) { /* storage unavailable: keep default dark */ }
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/*__CSS__*/
+</style>
+</head>
+<body>
+
+<!-- ===================== HEADER BAND ===================== -->
+<header class="hdr" role="banner">
+  <button class="hdr-burger" id="navToggle" aria-label="Open navigation" aria-controls="nav" aria-expanded="false">☰</button>
+  <div class="hdr-mark" aria-hidden="true">UCS</div>
+  <div class="hdr-titles">
+    <div class="hdr-client">Wipro<span class="wide"> · Boomi Developer – AI &amp; Intelligent Integration</span></div>
+    <h1 class="hdr-title">Boomi AI &amp; Intelligent Integration Command Center</h1>
+  </div>
+  <div class="hdr-meta">
+    <span class="chip ver" id="verChip">{{VERSION}}</span>
+    <span class="chip date">{{DATE}}</span>
+    <span class="chip opt">UCS Solutions</span>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch between dark and light theme">☾ Dark</button>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="shell">
+
+  <!-- ===================== LEFT ACCORDION NAV ===================== -->
+  <nav class="nav glass" id="nav" aria-label="Sections"></nav>
+
+  <main id="main">
+
+    <!-- ===================== KPI ROW ===================== -->
+    <div class="kpis" id="kpis" aria-label="Headline metrics"></div>
+
+    <!-- ===================== OVERVIEW ===================== -->
+    <section class="panel glass reveal" id="overview">
+      <div class="sec-head"><span class="sec-kicker">Overview</span><h2>Role, candidate and why this fits Wipro</h2></div>
+      <p class="sec-lede">A working view of the Wipro role <strong>Boomi Developer – AI &amp; Intelligent Integration</strong> against the candidate, Kenneth P. Barnes. Every job-description line is mapped to evidence, and each area of the role — design, test, deploy, AI integration, knowledge management — has a pattern you can open and inspect.</p>
+      <div class="grid">
+        <div class="card c4">
+          <h3>What the role asks</h3>
+          <ul class="tight">
+            <li>Translate service designs into Boomi integrations</li>
+            <li>Test, deploy and document them through to production</li>
+            <li>Connect enterprise applications to AI services over REST</li>
+            <li>Apply GenAI to six named integration use cases</li>
+            <li>Keep the service catalog and team knowledge current</li>
+          </ul>
+        </div>
+        <div class="card c4">
+          <h3>What the candidate brings</h3>
+          <ul class="tight">
+            <li>8 years hands-on Boomi, MuleSoft and Apigee, certified</li>
+            <li>30+ years of integration and application development</li>
+            <li>5+ years of production GenAI, RAG and agentic systems</li>
+            <li>Security depth: CISSP, CISM, CCSP; NIST AI RMF, ISO/IEC 42001</li>
+            <li>Current Wipro affiliation, and an earlier Wipro engagement in 2017 – 2019</li>
+          </ul>
+        </div>
+        <div class="card c4">
+          <h3>Why it matters to Wipro</h3>
+          <ul class="tight">
+            <li>Wipro is a Boomi Elite+ partner with a joint Digital Integration as-a-Service (DIaaS) offering</li>
+            <li>Boomi, MuleSoft and Apigee are all moving to agent and MCP governance in 2026</li>
+            <li>A developer who can build the integration and the AI controls shortens client pilots</li>
+          </ul>
+          <p class="note" style="margin-top:10px">Evidence statements come from the candidate resume. Simulator output and payloads are illustrative; no client data is used.</p>
+        </div>
+        <div class="card c7">
+          <h3>Job-description lines by section</h3>
+          <div class="chart-box"><canvas id="chartCoverage" aria-label="Bar chart of job-description lines mapped per section" role="img"></canvas></div>
+        </div>
+        <div class="card c5">
+          <h3>Experience asked and offered (years)</h3>
+          <div class="chart-box"><canvas id="chartExperience" aria-label="Bar chart comparing years asked and years offered" role="img"></canvas></div>
+          <p class="note">Asked values use the upper end of the job-description range (8 for overall, 3 for Boomi).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== JD CROSSWALK ===================== -->
+    <section class="panel glass reveal" id="crosswalk">
+      <div class="sec-head"><span class="sec-kicker">Role fit</span><h2>Job-description crosswalk</h2><span class="pill ok" id="xwCount"></span><span class="pill warn" id="xwVerify"></span></div>
+      <p class="sec-lede">All lines of the job description, each with the evidence that answers it. Filter by section or search; select a row for the full nine-part detail.</p>
+      <div class="filters" id="xwFilters" role="group" aria-label="Filter by section"></div>
+      <div class="filters"><input class="search" id="xwSearch" type="search" placeholder="Search requirements and evidence…" aria-label="Search requirements and evidence"></div>
+      <div class="tbl-wrap"><table class="tbl stack" id="xwTable"><thead><tr><th style="width:17%">Section</th><th style="width:36%">Job-description line</th><th>Evidence</th><th style="width:10%">Status</th></tr></thead><tbody></tbody></table></div>
+      <p class="note" id="xwEmpty" hidden>No lines match that filter.</p>
+    </section>
+
+    <!-- ===================== PLATFORMS ===================== -->
+    <section class="panel glass reveal" id="platforms">
+      <div class="sec-head"><span class="sec-kicker">Platforms</span><h2>Integration and AI platforms</h2></div>
+      <p class="sec-lede">The three integration platforms on the resume and the AI services the role connects them to. Select a tile for how each works, what it depends on and where it is heading.</p>
+      <div class="grid" id="platformGrid"></div>
+    </section>
+
+    <!-- ===================== LIFECYCLE ===================== -->
+    <section class="panel glass reveal" id="lifecycle">
+      <div class="sec-head"><span class="sec-kicker">Delivery</span><h2>Integration delivery lifecycle</h2></div>
+      <p class="sec-lede">The job description follows one path: design, build, test, deploy, hand over, improve. Each step opens into its method, inputs and outputs.</p>
+      <div class="steps" id="lifecycleSteps"></div>
+    </section>
+
+    <!-- ===================== ERROR HANDLING SIMULATOR ===================== -->
+    <section class="panel glass reveal" id="simulator">
+      <div class="sec-head"><span class="sec-kicker">Quality</span><h2>Error-handling simulator</h2><span class="pill idle" id="simResult">Not run</span></div>
+      <p class="sec-lede">An AI-enabled integration run under five conditions. It shows which step catches each failure and what the process does next — the behavior the role asks to be built into every integration. Output is illustrative.</p>
+      <div class="filters" id="simScenarios" role="group" aria-label="Scenario"></div>
+      <div class="sim-steps" id="simSteps"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="btn primary" id="simRun" type="button">Run scenario</button>
+        <button class="btn" id="simReset" type="button">Reset</button>
+      </div>
+      <pre class="code sim-log" id="simLog" aria-live="polite">Select a scenario and run it.</pre>
+    </section>
+
+    <!-- ===================== DEPLOYMENT CHECKLIST ===================== -->
+    <section class="panel glass reveal" id="checklist">
+      <div class="sec-head"><span class="sec-kicker">Production readiness</span><h2>Deployment checklist</h2><span class="pill idle" id="chkPill">0 of 0</span></div>
+      <p class="sec-lede">The six areas the job description names — configurations, dependencies, environment variables, credentials, rollback requirements, validation steps — as a working checklist. Ticks are kept in this browser only.</p>
+      <div class="bar" style="margin:0 0 16px"><i id="chkBar"></i></div>
+      <div class="grid" id="chkGrid"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
+        <button class="btn" id="chkCopy" type="button">Copy as Markdown</button>
+        <button class="btn" id="chkReset" type="button">Clear ticks</button>
+        <span class="note" id="chkMsg" aria-live="polite"></span>
+      </div>
+    </section>
+
+    <!-- ===================== AI USE CASES ===================== -->
+    <section class="panel glass reveal" id="usecases">
+      <div class="sec-head"><span class="sec-kicker">AI integration</span><h2>Six AI integration patterns</h2></div>
+      <p class="sec-lede">One reference pattern for each use case in the job description. Choose a pattern to see the flow, the Boomi building blocks, the controls and an example request.</p>
+      <div class="seg" id="ucTabs" role="tablist" aria-label="AI use case"></div>
+      <div class="grid">
+        <div class="card c12" id="ucDetail"></div>
+        <div class="card c7">
+          <h3>Technique by use case</h3>
+          <div class="tbl-wrap"><table class="tbl matrix" id="ucMatrix"></table></div>
+        </div>
+        <div class="card c5">
+          <h3>How often each technique is used</h3>
+          <div class="chart-box"><canvas id="chartTech" aria-label="Bar chart of techniques across the six use cases" role="img"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== AGENTIC ===================== -->
+    <section class="panel glass reveal" id="agentic">
+      <div class="sec-head"><span class="sec-kicker">2026 platforms</span><h2>Agentic integration</h2></div>
+      <p class="sec-lede">Where integration platforms are heading: agents that call integrations as tools, registries that govern them, and gateways that meter model traffic. The map shows how the pieces connect. Drag to rotate; select a node or a tile for detail.</p>
+      <div class="topo" id="topo" aria-label="Agentic integration topology"><span class="topo-hint">Drag to rotate · select a node</span></div>
+      <div class="legend" id="topoLegend"></div>
+      <div class="grid" id="agenticGrid" style="margin-top:16px"></div>
+    </section>
+
+    <!-- ===================== CONTROLS ===================== -->
+    <section class="panel glass reveal" id="controls">
+      <div class="sec-head"><span class="sec-kicker">Enterprise AI</span><h2>Security, privacy and responsible-AI controls</h2></div>
+      <p class="sec-lede">The enterprise considerations in the job description, each tied to the layer of the integration where it is enforced.</p>
+      <div class="tbl-wrap"><table class="tbl stack" id="ctlTable"><thead><tr><th style="width:18%">Control</th><th style="width:30%">Risk addressed</th><th>Where it is enforced</th><th style="width:20%">Reference</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- ===================== 30-60-90 ===================== -->
+    <section class="panel glass reveal" id="plan">
+      <div class="sec-head"><span class="sec-kicker">Proposed</span><h2>First 90 days</h2></div>
+      <p class="sec-lede">A proposed plan for the first three months in the role. It is a starting point for the conversation with the Wipro delivery lead, not a commitment made on anyone's behalf.</p>
+      <div class="plan" id="planGrid"></div>
+    </section>
+
+    <!-- ===================== INTERVIEW ===================== -->
+    <section class="panel glass reveal" id="interview">
+      <div class="sec-head"><span class="sec-kicker">Preparation</span><h2>Technical interview questions</h2></div>
+      <p class="sec-lede">Questions a Boomi and AI-integration screen is likely to raise, with the points to make.</p>
+      <div id="qaList"></div>
+    </section>
+
+    <!-- ===================== SOURCES ===================== -->
+    <section class="panel glass reveal" id="sources">
+      <div class="sec-head"><span class="sec-kicker">Method</span><h2>Sources and method</h2></div>
+      <p class="sec-lede">Job-description lines are taken from the role posting. Evidence is taken from the candidate resume. Platform statements for 2026 come from the vendor pages below, read in November 2026. Flows, payloads and simulator results are illustrative.</p>
+      <ul class="tight" id="srcList"></ul>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===================== DRILL-DOWN MODAL (9-section template) ===================== -->
+<div class="modal-back" id="modalBack" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labeledby="modalTitle" id="modal" tabindex="-1">
+    <div class="modal-head">
+      <div>
+        <div class="sec-kicker" id="modalKicker"></div>
+        <h3 id="modalTitle"></h3>
+        <div class="modal-sub" id="modalSub"></div>
+      </div>
+      <button class="modal-close" id="modalClose" type="button" aria-label="Close detail">✕</button>
+    </div>
+    <nav class="modal-toc" id="modalToc" aria-label="Detail sections"></nav>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ===================== ATTRIBUTION FOOTER ===================== -->
+<footer class="ucs-footer glass" role="contentinfo">
+  <div>
+    <div class="ucs-credit"><strong>Kenneth P. Barnes</strong> · Founder, CTO &amp; CISO · <strong>UCS Solutions</strong> (Ultimate Computer Solutions, Inc.) · est. 1993</div>
+    <div><a href="mailto:KBarnes@ucsolutions.com">KBarnes@ucsolutions.com</a> · 815-713-4151 · 804-356-5505</div>
+  </div>
+  <div style="text-align:right">
+    <div>Wipro · Boomi AI &amp; Intelligent Integration Command Center · <strong>{{VERSION}}</strong></div>
+    <div>{{DATE}} · © UCS Solutions. Prepared for the Wipro Boomi Developer – AI &amp; Intelligent Integration role.</div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/*__DATA__*/
+</script>
+<script>
+/*__APP__*/
+</script>
+</body>
+</html>

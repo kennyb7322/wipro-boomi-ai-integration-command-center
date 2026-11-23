@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Wipro · Boomi AI & Intelligent Integration Command Center — role crosswalk, integration lifecycle, AI integration patterns, agentic integration and controls.">
+<meta name="author" content="Kenneth P. Barnes · UCS Solutions">
+<title>Wipro · Boomi AI &amp; Intelligent Integration Command Center v1</title>
+<script>
+/* no-flash theme bootstrap */
+(function () {
+  try {
+    var t = localStorage.getItem('ucs-boomi-cc-theme');
+    if (t === 'light' || t === 'dark') { document.documentElement.setAttribute('data-theme', t); }
+  } catch (e) { /* storage unavailable: keep default dark */ }
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* UCS Command Center — glassmorphism tokens (dark default, light toggle) */
+:root, :root[data-theme="dark"] {
+  --bg-deep: #060a14;
+  --bg-grad-a: #0b1730;
+  --bg-grad-b: #101a3a;
+  --bg-elevated: rgba(255, 255, 255, 0.055);
+  --bg-elevated-2: rgba(255, 255, 255, 0.09);
+  --bg-solid: #0d1528;
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  --text: #e8eefb;
+  --text-dim: #a9b6d3;
+  --text-faint: #7f8db0;
+  --accent: #38bdf8;
+  --accent-2: #a78bfa;
+  --accent-3: #34d399;
+  --warn: #fbbf24;
+  --crit: #fb7185;
+  --ok: #34d399;
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  --glow: 0 0 0 1px rgba(56, 189, 248, 0.25), 0 10px 40px rgba(56, 189, 248, 0.12);
+  --code-bg: rgba(2, 6, 18, 0.72);
+  --orb-a: rgba(56, 189, 248, 0.22);
+  --orb-b: rgba(167, 139, 250, 0.2);
+  --orb-c: rgba(52, 211, 153, 0.13);
+  color-scheme: dark;
+}
+:root[data-theme="light"] {
+  --bg-deep: #eef3fa;
+  --bg-grad-a: #e3ecf8;
+  --bg-grad-b: #f4f0fb;
+  --bg-elevated: rgba(255, 255, 255, 0.72);
+  --bg-elevated-2: rgba(255, 255, 255, 0.92);
+  --bg-solid: #ffffff;
+  --border: rgba(15, 23, 42, 0.12);
+  --border-strong: rgba(15, 23, 42, 0.24);
+  --text: #0f172a;
+  --text-dim: #3b4a66;
+  --text-faint: #5b6b88;
+  --accent: #0369a1;
+  --accent-2: #6d28d9;
+  --accent-3: #047857;
+  --warn: #b45309;
+  --crit: #be123c;
+  --ok: #047857;
+  --shadow: 0 14px 40px rgba(15, 23, 42, 0.12);
+  --glow: 0 0 0 1px rgba(3, 105, 161, 0.25), 0 10px 30px rgba(3, 105, 161, 0.1);
+  --code-bg: rgba(15, 23, 42, 0.06);
+  --orb-a: rgba(56, 189, 248, 0.28);
+  --orb-b: rgba(167, 139, 250, 0.22);
+  --orb-c: rgba(52, 211, 153, 0.18);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 86px; }
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--text);
+  background: var(--bg-deep);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(900px 600px at 8% -5%, var(--orb-a), transparent 60%),
+    radial-gradient(800px 600px at 100% 10%, var(--orb-b), transparent 60%),
+    radial-gradient(900px 700px at 50% 110%, var(--orb-c), transparent 60%),
+    linear-gradient(160deg, var(--bg-grad-a), var(--bg-deep) 45%, var(--bg-grad-b));
+}
+a { color: var(--accent); }
+h1, h2, h3, h4 { margin: 0; line-height: 1.2; letter-spacing: -0.01em; }
+p { margin: 0 0 10px; }
+code, pre, .mono { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.glass {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+}
+
+/* ---------- header ---------- */
+.hdr {
+  position: sticky; top: 0; z-index: 40;
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 20px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+}
+.hdr-burger { display: none; border: 1px solid var(--border); background: var(--bg-elevated-2); border-radius: 10px; width: 40px; height: 40px; cursor: pointer; }
+.hdr-mark {
+  width: 40px; height: 40px; border-radius: 12px; flex: none;
+  display: grid; place-items: center; font-weight: 800; font-size: 13px; color: #04121f;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+}
+.hdr-titles { min-width: 0; flex: 1; }
+.hdr-client { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+.hdr-title { font-size: 17px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hdr-meta { display: flex; align-items: center; gap: 8px; flex: none; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--border); background: var(--bg-elevated-2); color: var(--text-dim); white-space: nowrap;
+}
+.chip.ver { color: var(--accent); border-color: var(--accent); }
+.theme-btn {
+  border: 1px solid var(--border-strong); background: var(--bg-elevated-2);
+  border-radius: 999px; padding: 6px 12px; cursor: pointer; font-size: 12.5px; font-weight: 600;
+}
+.theme-btn:hover { box-shadow: var(--glow); }
+
+/* ---------- layout ---------- */
+.shell { display: grid; grid-template-columns: 264px minmax(0, 1fr); gap: 22px; max-width: 1560px; margin: 0 auto; padding: 22px 20px 40px; }
+.nav {
+  position: sticky; top: 86px; align-self: start; max-height: calc(100vh - 106px); overflow: auto;
+  padding: 12px;
+}
+.nav-group { border-bottom: 1px solid var(--border); }
+.nav-group:last-child { border-bottom: 0; }
+.nav-group > button {
+  width: 100%; text-align: left; background: none; border: 0; cursor: pointer;
+  padding: 10px 8px; display: flex; justify-content: space-between; align-items: center;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-faint);
+}
+.nav-group > button::after { content: "▾"; transition: transform 0.2s; }
+.nav-group[aria-expanded="false"] > button::after { transform: rotate(-90deg); }
+.nav-group[aria-expanded="false"] .nav-items { display: none; }
+.nav-items { padding: 0 0 8px; }
+.nav-items a {
+  display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-radius: 10px;
+  color: var(--text-dim); text-decoration: none; font-weight: 500; font-size: 13.5px; border: 1px solid transparent;
+}
+.nav-items a:hover { background: var(--bg-elevated-2); color: var(--text); }
+.nav-items a.active { background: var(--bg-elevated-2); color: var(--text); border-color: var(--accent); box-shadow: var(--glow); }
+.nav-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-faint); flex: none; }
+.nav-items a.active .nav-dot { background: var(--accent); }
+.scrim { display: none; }
+
+main { min-width: 0; }
+section.panel { padding: 22px; margin-bottom: 22px; }
+.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 14px; margin-bottom: 6px; }
+.sec-head h2 { font-size: 20px; font-weight: 700; }
+.sec-kicker { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+.sec-lede { color: var(--text-dim); max-width: 92ch; margin-bottom: 16px; }
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+.c3 { grid-column: span 3; } .c4 { grid-column: span 4; } .c5 { grid-column: span 5; } .c6 { grid-column: span 6; }
+.c7 { grid-column: span 7; } .c8 { grid-column: span 8; } .c12 { grid-column: span 12; }
+.card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 14px; padding: 16px; min-width: 0; }
+.card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.card h4 { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin: 12px 0 6px; }
+.note { font-size: 12.5px; color: var(--text-faint); }
+.clickable { cursor: pointer; transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s; text-align: left; width: 100%; display: block; }
+.clickable:hover, .clickable:focus-visible { transform: translateY(-2px); border-color: var(--accent); box-shadow: var(--glow); }
+.more { font-size: 12px; font-weight: 600; color: var(--accent); margin-top: 8px; display: inline-block; }
+ul.tight { margin: 0; padding-left: 18px; } ul.tight li { margin-bottom: 4px; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: 11.5px; padding: 3px 8px; border-radius: 8px; background: var(--bg-elevated-2); border: 1px solid var(--border); color: var(--text-dim); }
+
+/* ---------- KPI row ---------- */
+.kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; margin-bottom: 22px; }
+.kpi { padding: 16px; border-radius: 16px; position: relative; overflow: hidden; }
+.kpi::after { content: ""; position: absolute; inset: auto -30% -60% auto; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, var(--orb-a), transparent 70%); pointer-events: none; }
+.kpi-val { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.kpi-val small { font-size: 15px; font-weight: 700; color: var(--text-dim); }
+.kpi-label { font-size: 12.5px; font-weight: 600; color: var(--text); margin-top: 4px; }
+.kpi-sub { font-size: 11.5px; color: var(--text-faint); margin-top: 2px; }
+.bar { height: 6px; border-radius: 999px; background: var(--bg-elevated-2); margin-top: 10px; position: relative; overflow: visible; }
+.bar > i { display: block; height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width 1.1s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.bar > b { position: absolute; top: -3px; width: 2px; height: 12px; background: var(--warn); border-radius: 2px; }
+
+/* ---------- pills ---------- */
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 700; white-space: nowrap; border: 1px solid transparent; }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pill.ok { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 45%, transparent); background: color-mix(in srgb, var(--ok) 12%, transparent); }
+.pill.warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 45%, transparent); background: color-mix(in srgb, var(--warn) 12%, transparent); }
+.pill.crit { color: var(--crit); border-color: color-mix(in srgb, var(--crit) 45%, transparent); background: color-mix(in srgb, var(--crit) 12%, transparent); }
+.pill.idle { color: var(--text-faint); border-color: var(--border); }
+.pill.run { color: var(--accent); border-color: var(--accent); }
+.pill.warn::before, .pill.crit::before, .pill.run::before { animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 currentColor; opacity: 1; } 50% { box-shadow: 0 0 0 5px transparent; opacity: 0.55; } }
+
+/* ---------- tables ---------- */
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; align-items: center; }
+.fbtn { border: 1px solid var(--border); background: var(--bg-elevated); border-radius: 999px; padding: 5px 12px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: var(--text-dim); }
+.fbtn[aria-pressed="true"] { color: var(--text); border-color: var(--accent); background: var(--bg-elevated-2); box-shadow: var(--glow); }
+.search { flex: 1 1 200px; min-width: 160px; padding: 7px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text); font: inherit; }
+.tbl-wrap { overflow: auto; border: 1px solid var(--border); border-radius: 12px; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 640px; }
+.tbl th { text-align: left; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-faint); padding: 10px 12px; background: var(--bg-elevated-2); position: sticky; top: 0; }
+.tbl td { padding: 10px 12px; border-top: 1px solid var(--border); vertical-align: top; }
+.tbl tr.rowlink { cursor: pointer; }
+.tbl tr.rowlink:hover td, .tbl tr.rowlink:focus-visible td { background: var(--bg-elevated-2); }
+.tbl td.cat { color: var(--text-faint); font-size: 12px; white-space: nowrap; }
+.tbl td.dim { color: var(--text-dim); }
+table.tbl.matrix { min-width: 0; font-size: 13px; }
+.matrix th, .matrix td { padding: 8px 4px; }
+.matrix th { letter-spacing: 0.03em; font-size: 10px; }
+.matrix th:first-child, .matrix td:first-child { padding-left: 12px; width: 32%; }
+.matrix td.hit { text-align: center; color: var(--accent-3); font-weight: 800; }
+.matrix td.miss { text-align: center; color: var(--text-faint); }
+.matrix th.rot { text-align: center; }
+
+/* ---------- charts ---------- */
+.chart-box { position: relative; height: 300px; }
+.chart-fallback { color: var(--text-faint); font-size: 13px; padding: 16px; }
+
+/* ---------- lifecycle ---------- */
+.steps { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; counter-reset: step; }
+.step { position: relative; padding: 16px 14px 14px; }
+.step::before { counter-increment: step; content: counter(step); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 10px; font-weight: 800; font-size: 13px; color: #04121f; background: linear-gradient(135deg, var(--accent), var(--accent-2)); margin-bottom: 10px; }
+.step p { font-size: 12.5px; color: var(--text-dim); margin: 0; }
+
+/* ---------- flow diagram ---------- */
+.flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; margin: 12px 0; }
+.flow-node { flex: 1 1 130px; min-width: 120px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border-strong); background: var(--bg-elevated-2); font-size: 12.5px; position: relative; }
+.flow-node b { display: block; font-size: 12.5px; }
+.flow-node span { color: var(--text-faint); font-size: 11.5px; }
+.flow-node.ai { border-color: var(--accent-2); }
+.flow-node.ctl { border-color: var(--accent-3); }
+.flow-arrow { align-self: center; color: var(--text-faint); font-weight: 700; }
+pre.code { margin: 0; padding: 12px 14px; border-radius: 12px; background: var(--code-bg); border: 1px solid var(--border); font-size: 12px; line-height: 1.5; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text); }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+
+/* ---------- simulator ---------- */
+.sim-steps { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; margin: 12px 0; }
+.sim-step { padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-elevated); min-height: 96px; transition: border-color 0.25s, background 0.25s; }
+.sim-step b { display: block; font-size: 12.5px; margin-bottom: 6px; }
+.sim-step small { display: block; color: var(--text-faint); font-size: 11.5px; margin-top: 6px; }
+.sim-step.is-run { border-color: var(--accent); }
+.sim-step.is-ok { border-color: color-mix(in srgb, var(--ok) 60%, transparent); }
+.sim-step.is-warn { border-color: var(--warn); }
+.sim-step.is-crit { border-color: var(--crit); }
+.sim-log { max-height: 210px; }
+.btn { border: 1px solid var(--border-strong); background: var(--bg-elevated-2); border-radius: 10px; padding: 8px 14px; cursor: pointer; font-weight: 600; font-size: 13px; }
+.btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #04121f; border-color: transparent; }
+.btn:hover { box-shadow: var(--glow); }
+.btn[disabled] { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+
+/* ---------- checklist ---------- */
+.chk-group { margin-bottom: 12px; }
+.chk-item { display: flex; gap: 10px; align-items: flex-start; padding: 7px 8px; border-radius: 10px; }
+.chk-item:hover { background: var(--bg-elevated-2); }
+.chk-item input { margin-top: 3px; width: 16px; height: 16px; accent-color: var(--accent); flex: none; }
+.chk-item.done span { color: var(--text-faint); text-decoration: line-through; }
+
+/* ---------- 3D ---------- */
+.topo { position: relative; height: 440px; border-radius: 14px; border: 1px solid var(--border); background: var(--code-bg); overflow: hidden; touch-action: none; cursor: grab; }
+.topo:active { cursor: grabbing; }
+.topo canvas { display: block; width: 100%; height: 100%; }
+.topo-label { position: absolute; transform: translate(-50%, -160%); font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 7px; background: var(--bg-solid); border: 1px solid var(--border); color: var(--text); pointer-events: none; white-space: nowrap; opacity: 0.94; }
+.topo-hint { position: absolute; left: 12px; bottom: 10px; font-size: 11.5px; color: var(--text-faint); pointer-events: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px 16px; font-size: 12px; color: var(--text-dim); margin-top: 10px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+
+/* ---------- plan + Q&A ---------- */
+.plan { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.plan .card { border-top: 3px solid var(--accent); }
+.plan .card:nth-child(2) { border-top-color: var(--accent-2); }
+.plan .card:nth-child(3) { border-top-color: var(--accent-3); }
+details.qa { border: 1px solid var(--border); border-radius: 12px; background: var(--bg-elevated); margin-bottom: 8px; }
+details.qa summary { cursor: pointer; padding: 12px 14px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+details.qa summary::-webkit-details-marker { display: none; }
+details.qa summary::after { content: "+"; color: var(--accent); font-weight: 800; }
+details.qa[open] summary::after { content: "–"; }
+details.qa .qa-body { padding: 0 14px 12px; color: var(--text-dim); }
+
+/* ---------- modal ---------- */
+.modal-back { position: fixed; inset: 0; z-index: 80; display: none; align-items: flex-start; justify-content: center; padding: 4vh 16px; background: rgba(2, 6, 18, 0.62); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); overflow: auto; }
+.modal-back.open { display: flex; }
+.modal { width: min(900px, 100%); background: var(--bg-solid); border: 1px solid var(--border-strong); border-radius: 18px; box-shadow: var(--shadow); animation: pop 0.22s ease-out; }
+@keyframes pop { from { transform: translateY(10px) scale(0.985); opacity: 0; } to { transform: none; opacity: 1; } }
+.modal-head { padding: 18px 22px 12px; border-bottom: 1px solid var(--border); display: flex; gap: 14px; align-items: flex-start; }
+.modal-head h3 { font-size: 19px; }
+.modal-sub { color: var(--text-dim); font-size: 13.5px; margin-top: 4px; }
+.modal-close { margin-left: auto; border: 1px solid var(--border); background: var(--bg-elevated-2); border-radius: 10px; width: 36px; height: 36px; cursor: pointer; flex: none; font-size: 16px; }
+.modal-toc { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 22px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg-solid); z-index: 1; }
+.modal-toc a { font-size: 11.5px; font-weight: 600; text-decoration: none; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--border); color: var(--text-dim); }
+.modal-toc a:hover { border-color: var(--accent); color: var(--text); }
+.modal-body { padding: 8px 22px 22px; }
+.msec { padding: 12px 0; border-bottom: 1px dashed var(--border); scroll-margin-top: 60px; }
+.msec:last-child { border-bottom: 0; }
+.msec h4 { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+.msec p { margin: 0; color: var(--text); }
+.msec.na p { color: var(--text-faint); font-style: italic; }
+
+/* ---------- footer ---------- */
+.ucs-footer { max-width: 1560px; margin: 0 auto 30px; padding: 18px 22px; display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; justify-content: space-between; font-size: 12.5px; color: var(--text-dim); }
+.ucs-footer strong { color: var(--text); }
+.ucs-footer .ucs-credit { font-weight: 600; }
+
+/* ---------- mount animation ---------- */
+.reveal { opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease, transform 0.5s ease; }
+.reveal.in { opacity: 1; transform: none; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1280px) { .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } .steps, .sim-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 1020px) {
+  .shell { grid-template-columns: minmax(0, 1fr); padding: 16px 12px 30px; }
+  .hdr-burger { display: block; }
+  .nav { position: fixed; top: 0; left: 0; bottom: 0; width: 280px; max-height: none; z-index: 70; border-radius: 0 16px 16px 0; transform: translateX(-105%); transition: transform 0.25s; background: var(--bg-solid); }
+  body.nav-open .nav { transform: none; }
+  body.nav-open .scrim { display: block; position: fixed; inset: 0; z-index: 60; background: rgba(2, 6, 18, 0.55); }
+  .c3, .c4, .c5, .c6, .c7, .c8 { grid-column: span 12; }
+  .plan { grid-template-columns: minmax(0, 1fr); }
+  .hdr-meta .chip.opt { display: none; }
+}
+@media (max-width: 640px) {
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .steps, .sim-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  section.panel { padding: 16px; }
+  .hdr-title { font-size: 14.5px; }
+  .hdr-meta .chip.date { display: none; }
+  .hdr-client .wide { display: none; }
+  .topo { height: 340px; }
+  .topo-label { font-size: 10px; padding: 1px 5px; }
+  table.tbl.stack { min-width: 0; }
+  .tbl.stack thead { display: none; }
+  .tbl.stack tr { display: block; padding: 10px 12px; border-top: 1px solid var(--border); }
+  .tbl.stack tr:first-child { border-top: 0; }
+  .tbl.stack td { display: block; padding: 2px 0; border: 0; }
+  .tbl.stack td.cat { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; white-space: normal; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .reveal { opacity: 1; transform: none; }
+}
+@media print {
+  .hdr, .nav, .theme-btn, .modal-back { display: none !important; }
+  .shell { grid-template-columns: 1fr; }
+  body::before { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== HEADER BAND ===================== -->
+<header class="hdr" role="banner">
+  <button class="hdr-burger" id="navToggle" aria-label="Open navigation" aria-controls="nav" aria-expanded="false">☰</button>
+  <div class="hdr-mark" aria-hidden="true">UCS</div>
+  <div class="hdr-titles">
+    <div class="hdr-client">Wipro<span class="wide"> · Boomi Developer – AI &amp; Intelligent Integration</span></div>
+    <h1 class="hdr-title">Boomi AI &amp; Intelligent Integration Command Center</h1>
+  </div>
+  <div class="hdr-meta">
+    <span class="chip ver" id="verChip">v1</span>
+    <span class="chip date">2026-11-23</span>
+    <span class="chip opt">UCS Solutions</span>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch between dark and light theme">☾ Dark</button>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="shell">
+
+  <!-- ===================== LEFT ACCORDION NAV ===================== -->
+  <nav class="nav glass" id="nav" aria-label="Sections"></nav>
+
+  <main id="main">
+
+    <!-- ===================== KPI ROW ===================== -->
+    <div class="kpis" id="kpis" aria-label="Headline metrics"></div>
+
+    <!-- ===================== OVERVIEW ===================== -->
+    <section class="panel glass reveal" id="overview">
+      <div class="sec-head"><span class="sec-kicker">Overview</span><h2>Role, candidate and why this fits Wipro</h2></div>
+      <p class="sec-lede">A working view of the Wipro role <strong>Boomi Developer – AI &amp; Intelligent Integration</strong> against the candidate, Kenneth P. Barnes. Every job-description line is mapped to evidence, and each area of the role — design, test, deploy, AI integration, knowledge management — has a pattern you can open and inspect.</p>
+      <div class="grid">
+        <div class="card c4">
+          <h3>What the role asks</h3>
+          <ul class="tight">
+            <li>Translate service designs into Boomi integrations</li>
+            <li>Test, deploy and document them through to production</li>
+            <li>Connect enterprise applications to AI services over REST</li>
+            <li>Apply GenAI to six named integration use cases</li>
+            <li>Keep the service catalog and team knowledge current</li>
+          </ul>
+        </div>
+        <div class="card c4">
+          <h3>What the candidate brings</h3>
+          <ul class="tight">
+            <li>8 years hands-on Boomi, MuleSoft and Apigee, certified</li>
+            <li>30+ years of integration and application development</li>
+            <li>5+ years of production GenAI, RAG and agentic systems</li>
+            <li>Security depth: CISSP, CISM, CCSP; NIST AI RMF, ISO/IEC 42001</li>
+            <li>Current Wipro affiliation, and an earlier Wipro engagement in 2017 – 2019</li>
+          </ul>
+        </div>
+        <div class="card c4">
+          <h3>Why it matters to Wipro</h3>
+          <ul class="tight">
+            <li>Wipro is a Boomi Elite+ partner with a joint Digital Integration as-a-Service (DIaaS) offering</li>
+            <li>Boomi, MuleSoft and Apigee are all moving to agent and MCP governance in 2026</li>
+            <li>A developer who can build the integration and the AI controls shortens client pilots</li>
+          </ul>
+          <p class="note" style="margin-top:10px">Evidence statements come from the candidate resume. Simulator output and payloads are illustrative; no client data is used.</p>
+        </div>
+        <div class="card c7">
+          <h3>Job-description lines by section</h3>
+          <div class="chart-box"><canvas id="chartCoverage" aria-label="Bar chart of job-description lines mapped per section" role="img"></canvas></div>
+        </div>
+        <div class="card c5">
+          <h3>Experience asked and offered (years)</h3>
+          <div class="chart-box"><canvas id="chartExperience" aria-label="Bar chart comparing years asked and years offered" role="img"></canvas></div>
+          <p class="note">Asked values use the upper end of the job-description range (8 for overall, 3 for Boomi).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== JD CROSSWALK ===================== -->
+    <section class="panel glass reveal" id="crosswalk">
+      <div class="sec-head"><span class="sec-kicker">Role fit</span><h2>Job-description crosswalk</h2><span class="pill ok" id="xwCount"></span><span class="pill warn" id="xwVerify"></span></div>
+      <p class="sec-lede">All lines of the job description, each with the evidence that answers it. Filter by section or search; select a row for the full nine-part detail.</p>
+      <div class="filters" id="xwFilters" role="group" aria-label="Filter by section"></div>
+      <div class="filters"><input class="search" id="xwSearch" type="search" placeholder="Search requirements and evidence…" aria-label="Search requirements and evidence"></div>
+      <div class="tbl-wrap"><table class="tbl stack" id="xwTable"><thead><tr><th style="width:17%">Section</th><th style="width:36%">Job-description line</th><th>Evidence</th><th style="width:10%">Status</th></tr></thead><tbody></tbody></table></div>
+      <p class="note" id="xwEmpty" hidden>No lines match that filter.</p>
+    </section>
+
+    <!-- ===================== PLATFORMS ===================== -->
+    <section class="panel glass reveal" id="platforms">
+      <div class="sec-head"><span class="sec-kicker">Platforms</span><h2>Integration and AI platforms</h2></div>
+      <p class="sec-lede">The three integration platforms on the resume and the AI services the role connects them to. Select a tile for how each works, what it depends on and where it is heading.</p>
+      <div class="grid" id="platformGrid"></div>
+    </section>
+
+    <!-- ===================== LIFECYCLE ===================== -->
+    <section class="panel glass reveal" id="lifecycle">
+      <div class="sec-head"><span class="sec-kicker">Delivery</span><h2>Integration delivery lifecycle</h2></div>
+      <p class="sec-lede">The job description follows one path: design, build, test, deploy, hand over, improve. Each step opens into its method, inputs and outputs.</p>
+      <div class="steps" id="lifecycleSteps"></div>
+    </section>
+
+    <!-- ===================== ERROR HANDLING SIMULATOR ===================== -->
+    <section class="panel glass reveal" id="simulator">
+      <div class="sec-head"><span class="sec-kicker">Quality</span><h2>Error-handling simulator</h2><span class="pill idle" id="simResult">Not run</span></div>
+      <p class="sec-lede">An AI-enabled integration run under five conditions. It shows which step catches each failure and what the process does next — the behavior the role asks to be built into every integration. Output is illustrative.</p>
+      <div class="filters" id="simScenarios" role="group" aria-label="Scenario"></div>
+      <div class="sim-steps" id="simSteps"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+        <button class="btn primary" id="simRun" type="button">Run scenario</button>
+        <button class="btn" id="simReset" type="button">Reset</button>
+      </div>
+      <pre class="code sim-log" id="simLog" aria-live="polite">Select a scenario and run it.</pre>
+    </section>
+
+    <!-- ===================== DEPLOYMENT CHECKLIST ===================== -->
+    <section class="panel glass reveal" id="checklist">
+      <div class="sec-head"><span class="sec-kicker">Production readiness</span><h2>Deployment checklist</h2><span class="pill idle" id="chkPill">0 of 0</span></div>
+      <p class="sec-lede">The six areas the job description names — configurations, dependencies, environment variables, credentials, rollback requirements, validation steps — as a working checklist. Ticks are kept in this browser only.</p>
+      <div class="bar" style="margin:0 0 16px"><i id="chkBar"></i></div>
+      <div class="grid" id="chkGrid"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
+        <button class="btn" id="chkCopy" type="button">Copy as Markdown</button>
+        <button class="btn" id="chkReset" type="button">Clear ticks</button>
+        <span class="note" id="chkMsg" aria-live="polite"></span>
+      </div>
+    </section>
+
+    <!-- ===================== AI USE CASES ===================== -->
+    <section class="panel glass reveal" id="usecases">
+      <div class="sec-head"><span class="sec-kicker">AI integration</span><h2>Six AI integration patterns</h2></div>
+      <p class="sec-lede">One reference pattern for each use case in the job description. Choose a pattern to see the flow, the Boomi building blocks, the controls and an example request.</p>
+      <div class="seg" id="ucTabs" role="tablist" aria-label="AI use case"></div>
+      <div class="grid">
+        <div class="card c12" id="ucDetail"></div>
+        <div class="card c7">
+          <h3>Technique by use case</h3>
+          <div class="tbl-wrap"><table class="tbl matrix" id="ucMatrix"></table></div>
+        </div>
+        <div class="card c5">
+          <h3>How often each technique is used</h3>
+          <div class="chart-box"><canvas id="chartTech" aria-label="Bar chart of techniques across the six use cases" role="img"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== AGENTIC ===================== -->
+    <section class="panel glass reveal" id="agentic">
+      <div class="sec-head"><span class="sec-kicker">2026 platforms</span><h2>Agentic integration</h2></div>
+      <p class="sec-lede">Where integration platforms are heading: agents that call integrations as tools, registries that govern them, and gateways that meter model traffic. The map shows how the pieces connect. Drag to rotate; select a node or a tile for detail.</p>
+      <div class="topo" id="topo" aria-label="Agentic integration topology"><span class="topo-hint">Drag to rotate · select a node</span></div>
+      <div class="legend" id="topoLegend"></div>
+      <div class="grid" id="agenticGrid" style="margin-top:16px"></div>
+    </section>
+
+    <!-- ===================== CONTROLS ===================== -->
+    <section class="panel glass reveal" id="controls">
+      <div class="sec-head"><span class="sec-kicker">Enterprise AI</span><h2>Security, privacy and responsible-AI controls</h2></div>
+      <p class="sec-lede">The enterprise considerations in the job description, each tied to the layer of the integration where it is enforced.</p>
+      <div class="tbl-wrap"><table class="tbl stack" id="ctlTable"><thead><tr><th style="width:18%">Control</th><th style="width:30%">Risk addressed</th><th>Where it is enforced</th><th style="width:20%">Reference</th></tr></thead><tbody></tbody></table></div>
+    </section>
+
+    <!-- ===================== 30-60-90 ===================== -->
+    <section class="panel glass reveal" id="plan">
+      <div class="sec-head"><span class="sec-kicker">Proposed</span><h2>First 90 days</h2></div>
+      <p class="sec-lede">A proposed plan for the first three months in the role. It is a starting point for the conversation with the Wipro delivery lead, not a commitment made on anyone's behalf.</p>
+      <div class="plan" id="planGrid"></div>
+    </section>
+
+    <!-- ===================== INTERVIEW ===================== -->
+    <section class="panel glass reveal" id="interview">
+      <div class="sec-head"><span class="sec-kicker">Preparation</span><h2>Technical interview questions</h2></div>
+      <p class="sec-lede">Questions a Boomi and AI-integration screen is likely to raise, with the points to make.</p>
+      <div id="qaList"></div>
+    </section>
+
+    <!-- ===================== SOURCES ===================== -->
+    <section class="panel glass reveal" id="sources">
+      <div class="sec-head"><span class="sec-kicker">Method</span><h2>Sources and method</h2></div>
+      <p class="sec-lede">Job-description lines are taken from the role posting. Evidence is taken from the candidate resume. Platform statements for 2026 come from the vendor pages below, read in November 2026. Flows, payloads and simulator results are illustrative.</p>
+      <ul class="tight" id="srcList"></ul>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===================== DRILL-DOWN MODAL (9-section template) ===================== -->
+<div class="modal-back" id="modalBack" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labeledby="modalTitle" id="modal" tabindex="-1">
+    <div class="modal-head">
+      <div>
+        <div class="sec-kicker" id="modalKicker"></div>
+        <h3 id="modalTitle"></h3>
+        <div class="modal-sub" id="modalSub"></div>
+      </div>
+      <button class="modal-close" id="modalClose" type="button" aria-label="Close detail">✕</button>
+    </div>
+    <nav class="modal-toc" id="modalToc" aria-label="Detail sections"></nav>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ===================== ATTRIBUTION FOOTER ===================== -->
+<footer class="ucs-footer glass" role="contentinfo">
+  <div>
+    <div class="ucs-credit"><strong>Kenneth P. Barnes</strong> · Founder, CTO &amp; CISO · <strong>UCS Solutions</strong> (Ultimate Computer Solutions, Inc.) · est. 1993</div>
+    <div><a href="mailto:KBarnes@ucsolutions.com">KBarnes@ucsolutions.com</a> · 815-713-4151 · 804-356-5505</div>
+  </div>
+  <div style="text-align:right">
+    <div>Wipro · Boomi AI &amp; Intelligent Integration Command Center · <strong>v1</strong></div>
+    <div>2026-11-23 · © UCS Solutions. Prepared for the Wipro Boomi Developer – AI &amp; Intelligent Integration role.</div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* Content for the Wipro · Boomi AI & Intelligent Integration Command Center.
+   Evidence statements come from the candidate resume in /resume. Platform facts are from the
+   vendor pages listed in SOURCES. Simulator output and payloads are illustrative, not client data. */
+window.CC = (function () {
+  'use strict';
+
+  var META = {
+    client: 'Wipro',
+    title: 'Boomi AI & Intelligent Integration Command Center',
+    role: 'Boomi Developer – AI & Intelligent Integration',
+    version: 'v1',
+    date: '2026-11-23',
+    candidate: 'Kenneth P. Barnes'
+  };
+
+  var CATS = {
+    design: 'Service Design & Development',
+    test: 'Testing & Quality',
+    deploy: 'Deployment & Production Readiness',
+    ai: 'AI & Generative AI Integration',
+    km: 'Knowledge Management & Improvement',
+    tech: 'Required Technical Skills',
+    aiskill: 'AI Skills',
+    pref: 'Preferred Skills',
+    exp: 'Experience Profile',
+    comp: 'Key Competencies'
+  };
+
+  var PRACTICE = 'Integration practice delivered through UCS Solutions client engagements';
+  var TXCN = 'State of Texas (TXDPS / TXHHS) and Chickasaw Nation API-management work (Apigee, MuleSoft, Boomi, ServiceNow)';
+
+  /* [category, JD line, evidence from the resume, where it shows up, status] */
+  var REQS = [
+    ['design', 'Understand functional, technical and service design requirements and translate them into Boomi integration solutions.', 'Service designs translated into AtomSphere processes and subprocesses under the defined architecture and coding standards.', PRACTICE],
+    ['design', 'Develop integrations using Boomi AtomSphere, following defined architecture, coding standards, reusable components and development processes.', '8 years hands-on Boomi: processes, subprocesses, connectors, profiles, maps and a reusable-component library.', PRACTICE],
+    ['design', 'Build and maintain APIs, application integrations, data transformations, workflows and interfaces.', 'REST / SOAP APIs published through API Management; JSON, XML, flat-file and database profiles; maps with functions and scripting.', TXCN],
+    ['design', 'Work with application subject-matter experts, architects and technical teams to clarify integration requirements and dependencies.', 'Requirements and dependencies settled with application SMEs, architects and technical teams across 400+ engagements.', 'UCS Solutions engagements; Amazon LeanIX, ServiceNow and Workday owners'],
+    ['design', 'Provide technical inputs for effort estimation, solution design and delivery planning.', 'Scope estimation, forecasting and delivery planning; PMP, PgMP and SAFe certified.', 'UCS Solutions; Wipro; Humana'],
+
+    ['test', 'Prepare unit test plans, test scenarios, test cases and test data for developed integrations.', 'Unit test plans, scenarios, cases and test data prepared for each integration.', PRACTICE],
+    ['test', 'Perform unit testing and defect resolution before promoting integrations to higher environments.', 'Unit tests run and defects resolved before promotion to higher environments.', PRACTICE],
+    ['test', 'Ensure appropriate error handling, exception management, logging and monitoring are incorporated into integrations.', 'Try / catch and exception frameworks, retry handling, structured logging, alerting and monitoring built into every process.', PRACTICE],
+    ['test', 'Support integration, regression and production validation as required.', 'Integration, regression and production-validation support.', PRACTICE],
+
+    ['deploy', 'Prepare and maintain deployment checklists covering configurations, dependencies, environment variables, credentials, rollback requirements and validation steps.', 'Deployment checklists owned end to end: configurations, dependencies, environment variables and extensions, credentials, rollback and validation.', PRACTICE],
+    ['deploy', 'Support deployment of Boomi components across development, test, staging and production environments.', 'Boomi components deployed across development, test, staging and production.', PRACTICE],
+    ['deploy', 'Create service user guides, support documentation and operational handover documents.', 'Service user guides, support documentation, runbooks and operational handover documents.', 'UCS Solutions; GE Appliances runbooks and trackers'],
+    ['deploy', 'Assist support teams with troubleshooting and root-cause analysis for integration issues.', 'Troubleshooting and root-cause analysis with support teams; integration health monitored and synchronization failures resolved.', 'Amazon (LeanIX ↔ ServiceNow ↔ Workday integrations)'],
+
+    ['ai', 'Understand core concepts of Generative AI, LLMs, prompt engineering, RAG, embeddings and vector search.', '5+ years production GenAI; LLMRAG-V3 framework with hybrid and GraphRAG retrieval, embeddings pipelines and evaluation.', 'LLMRAG-V3; State of Texas Claude + Bedrock RAG'],
+    ['ai', 'Develop Boomi-based integrations that connect enterprise applications with AI services through REST APIs.', 'Boomi integrations calling AI services over REST with OAuth 2.0 authentication and token and cost controls.', PRACTICE],
+    ['ai', 'Integrate AI services such as Azure OpenAI / OpenAI APIs or equivalent enterprise AI platforms where required.', 'Azure OpenAI, AWS Bedrock, Vertex AI and Claude integrated into enterprise workflows.', 'UCS Solutions; State of Texas; Humana; Ford'],
+    ['ai', 'Use AI to enhance integration use cases: document / data processing, classification and enrichment, summarization, knowledge retrieval, error / incident analysis, workflow automation.', 'All six use cases covered with a reference pattern in this command center; summarization and document generation delivered with Copilot Studio agents.', 'State of Texas; Chickasaw Nation; CureSMA'],
+    ['ai', 'Understand enterprise considerations around AI security, data privacy, access controls, hallucination management and responsible AI.', 'AI governance model on NIST AI RMF and ISO/IEC 42001; guardrails, evaluation gates, tracing and human approval; Sentinel AI platform.', 'Humana EA; GE Appliances; Sentinel AI'],
+    ['ai', 'Leverage AI-assisted development capabilities to improve developer productivity, documentation, testing and troubleshooting.', 'Claude Code used for module generation, documentation and runbooks under reviewed, version-controlled workflows; Boomi AI and Boomi Companion on the platform side.', 'Wipro / Ford; GE Appliances; Humana'],
+
+    ['km', 'Maintain the integration / service catalog with current service details, interfaces, dependencies, ownership and operational information.', 'Integration / service catalog upkeep; application inventories reconciled with system-of-record rules, ownership models and data-quality KPIs.', 'Amazon (LeanIX application portfolio); UCS Solutions'],
+    ['km', 'Document and share lessons learned, reusable components, development patterns and troubleshooting guidance.', 'Lessons learned, reusable components, patterns and troubleshooting guides documented and shared; 30+ architects coached.', 'Amazon; UCS Solutions'],
+    ['km', 'Identify opportunities to improve existing Boomi integrations through reusable frameworks, automation, performance optimization and AI-based capabilities.', 'Improvement through reusable frameworks, automation, performance optimization and AI-based capabilities.', PRACTICE],
+
+    ['tech', 'Strong hands-on experience with Boomi AtomSphere.', '8 years hands-on, certified.', PRACTICE],
+    ['tech', 'Experience developing Boomi processes and subprocesses, connectors, profiles and mappings, REST / SOAP web services, error-handling frameworks, scheduling and process deployment.', 'Each item is covered in the resume core competencies and integration experience block.', PRACTICE],
+    ['tech', 'Good understanding of API-led integration, REST, JSON, XML, OAuth 2.0 and authentication mechanisms.', 'API-led design; REST, JSON, XML, OAuth 2.0, OIDC, JWT, mTLS; OAuth-secured FastAPI middleware at Amazon.', 'Amazon; ' + TXCN],
+    ['tech', 'Experience integrating SaaS, cloud, databases and enterprise applications.', 'ServiceNow, Workday, SAP, LeanIX, SharePoint / Microsoft 365, SQL databases and Azure / AWS / GCP services.', 'Amazon; State of Texas; RCGGS'],
+    ['tech', 'Working knowledge of SQL and data transformation.', 'SQL listed with data engineering depth (Spark, dbt, Kafka); mapping and transformation across profiles.', 'UCS Solutions; RCGGS'],
+    ['tech', 'Understanding of CI/CD and integration deployment practices.', 'GitHub Actions and Azure DevOps pipelines; packaged-component deployment and environment promotion.', 'UCS Solutions; Humana; Ford'],
+    ['tech', 'Good knowledge of unit testing and integration testing.', 'Unit and integration testing as release gates; evaluation-gated CI on AI pipelines.', PRACTICE],
+
+    ['aiskill', 'Generative AI and LLM concepts.', 'Production LLM systems for 5+ years across Azure OpenAI, Bedrock, Vertex AI and Claude.', 'UCS Solutions'],
+    ['aiskill', 'Prompt engineering.', 'Prompt orchestration, instruction design and guardrails.', 'UCS Solutions; Humana'],
+    ['aiskill', 'AI / LLM APIs.', 'REST and SDK integration with Azure OpenAI, Bedrock, Vertex AI and Claude APIs.', 'UCS Solutions'],
+    ['aiskill', 'RAG concepts.', 'Hybrid (BM25 + dense) retrieval, GraphRAG, re-ranking, query decomposition.', 'LLMRAG-V3; State of Texas'],
+    ['aiskill', 'Embeddings and vector databases.', 'Embedding pipelines into Vertex AI Vector Search, Weaviate, Pinecone, Milvus and pgvector.', 'LLMRAG-V3'],
+    ['aiskill', 'Enterprise AI security and responsible AI.', 'NIST AI RMF, ISO/IEC 42001, OWASP LLM Top 10; prompt-injection defenses; CISSP, CISM, CCSP.', 'Sentinel AI; Humana EA'],
+    ['aiskill', 'Integrating AI / LLM capabilities into business workflows.', 'Copilot Studio agents and Power Automate flows for document generation, summarization and compliance documentation.', 'State of Texas; Chickasaw Nation'],
+    ['aiskill', 'Azure OpenAI or OpenAI APIs (preferred).', 'Azure OpenAI listed in the technical environment; Azure depth of 18+ years.', 'UCS Solutions'],
+    ['aiskill', 'Basic working knowledge of Python for AI prototyping and automation (desirable).', 'Expert Python: FastAPI services, LangChain / LangGraph, PyTorch.', 'Amazon; UCS Solutions'],
+
+    ['pref', 'Boomi Professional Developer or relevant Boomi certifications.', 'Resume states Boomi-certified. Add the exact certificate title and ID before submission.', 'Certifications section', 'verify'],
+    ['pref', 'Experience with Azure cloud services.', 'Azure 18+ years as primary public cloud.', 'UCS Solutions; Wipro 2017 – 2019'],
+    ['pref', 'API management experience.', 'Boomi API Management, MuleSoft API Manager, Apigee and Azure API Management.', 'Wipro 2017 – 2019; State of Texas; Chickasaw Nation'],
+    ['pref', 'DevOps / CI-CD exposure.', 'GitHub Actions, Azure DevOps, Terraform, Kubernetes.', 'UCS Solutions; Humana; Ford'],
+    ['pref', 'Experience with enterprise integration architecture.', 'TOGAF 9 and SABSA certified; principal architect on integration-heavy programs.', 'Amazon; State of Texas'],
+    ['pref', 'Exposure to AI-enabled automation and intelligent operations.', 'AI-assisted SOC workflows with analyst approval; Copilot Studio automation.', 'GE Appliances; State of Texas'],
+    ['pref', 'Experience working with Agile delivery teams.', 'Agile / Scrum and SAFe (certified).', 'UCS Solutions; Humana; Ford'],
+
+    ['exp', '5–8 years of overall integration / application development experience.', '30+ years.', 'Professional history, 1993 – present'],
+    ['exp', '3+ years of hands-on Boomi development experience.', '8 years.', PRACTICE],
+    ['exp', 'Practical exposure to AI / Generative AI integration use cases.', '5+ years of production GenAI, RAG and agentic systems.', 'UCS Solutions; State of Texas; Humana'],
+    ['exp', 'Strong analytical, troubleshooting, documentation and stakeholder-coordination skills.', 'Root-cause analysis, runbooks and handover packs; executive and developer stakeholder communication.', 'Amazon; GE Appliances; Humana'],
+
+    ['comp', 'Integration design and development.', 'Processes, APIs and transformations designed and built on Boomi, MuleSoft and Apigee.', PRACTICE],
+    ['comp', 'Problem solving and troubleshooting.', 'Integration failures traced to cause and fixed at source; synchronization failures resolved.', 'Amazon'],
+    ['comp', 'Quality-focused development.', 'Unit tests, error-handling standards and release gates.', PRACTICE],
+    ['comp', 'Estimation and delivery planning.', 'Scope estimation and forecasting; PMP / PgMP.', 'UCS Solutions'],
+    ['comp', 'Collaboration with application and technical teams.', 'Cross-functional work with SMEs, architects, security and product teams.', 'Wipro; Humana; Amazon'],
+    ['comp', 'Documentation and knowledge management.', 'Service guides, runbooks, catalog entries, architecture decision records.', 'UCS Solutions; GE Appliances'],
+    ['comp', 'Continuous improvement mindset.', 'Reusable frameworks and automation; Six Sigma Black Belt.', 'UCS Solutions'],
+    ['comp', 'Ability to identify practical applications of AI within enterprise integration.', 'Six AI integration patterns in this command center, each with controls and a failure path.', 'This command center']
+  ];
+
+  var CAT_TEMPLATES = {
+    design: {
+      uses: 'New application-to-application interfaces, API enablement of an existing service, and change requests against a live integration.',
+      examples: 'A service design naming source, target, trigger, payload and SLA becomes a main process, a mapping subprocess and a shared error-handling subprocess.',
+      deps: 'Approved service design, interface specifications, connector licenses, environment access and the team naming and folder standards.',
+      inter: 'Feeds test planning (cases derive from the design), the deployment checklist (extensions and credentials) and the service-catalog entry.',
+      when: 'At intake of every new or changed integration, before any shape is placed on the canvas.',
+      future: 'Design-first with AI assistance: Boomi DesignGen or Boomi Companion drafts the process from the service design and the developer reviews and hardens it.'
+    },
+    test: {
+      uses: 'Unit verification of maps and routes, negative-path testing of error handling, regression after component changes.',
+      examples: 'A test data set with a valid document, a schema-invalid document and a target-system timeout, each with an expected outcome and log entry.',
+      deps: 'A stable test environment and runtime, representative and masked test data, access to target-system sandboxes.',
+      inter: 'Results gate promotion in the deployment checklist; recurring defects become entries in the troubleshooting guide.',
+      when: 'Before every promotion to a higher environment and after any change to a shared component.',
+      future: 'AI-drafted test cases and synthetic test data from profiles, reviewed by the developer; regression packs run from the pipeline.'
+    },
+    deploy: {
+      uses: 'Planned releases, hotfixes, environment refreshes and rollback rehearsals.',
+      examples: 'Checklist row: OAuth client secret set as an encrypted environment extension in Test, verified by a connection test, owner named, rollback is redeploying the prior package version.',
+      deps: 'Packaged components with version notes, environment extensions, runtime availability, change approval and a named rollback owner.',
+      inter: 'Consumes test evidence; produces the handover pack used by support and the catalog update.',
+      when: 'Every movement of a component between development, test, staging and production.',
+      future: 'Pipeline-driven promotion through the platform API with the checklist as code, and AI-drafted release notes from component differences.'
+    },
+    ai: {
+      uses: 'Document and data processing, classification and enrichment, summarization, knowledge retrieval, incident analysis and workflow automation.',
+      examples: 'A Boomi process sends a masked payload to a chat-completions endpoint with a system prompt and a JSON schema, validates the reply and routes low-confidence results to a person.',
+      deps: 'An approved AI platform and model, API credentials held as environment extensions, a prompt and schema under version control, data-classification rules.',
+      inter: 'Relies on the same error-handling, logging and deployment disciplines as any integration; adds token, privacy and output-validation controls.',
+      when: 'Where unstructured content, judgment-style classification or natural-language output would otherwise need manual effort.',
+      future: 'Agent-ready integrations: processes and APIs exposed as MCP tools and governed from an agent control plane.'
+    },
+    km: {
+      uses: 'Onboarding a new developer, impact analysis for a change, audit of interface ownership.',
+      examples: 'Catalog entry: service name, source and target, interfaces, schedule, dependencies, owner, support contact, runbook link, last deployment.',
+      deps: 'A single catalog of record, naming standards, and a rule that deployment is not complete until the catalog is updated.',
+      inter: 'Updated by the deployment checklist; read by support during root-cause analysis; mined for reuse during design.',
+      when: 'At every release, every ownership change and every post-incident review.',
+      future: 'AI-written process documentation (Boomi Scribe) and catalog entries generated from deployed components, reviewed before publishing.'
+    },
+    tech: {
+      uses: 'Day-to-day build of processes, APIs and transformations across SaaS, cloud, database and enterprise applications.',
+      examples: 'A REST API published through API Management, secured with OAuth 2.0, backed by a process that maps JSON to a database profile.',
+      deps: 'Platform access and runtimes, connector availability, API security standards, packaged-component discipline.',
+      inter: 'Each skill shows up in design, test and deployment; weak error handling or mapping surfaces later as support load.',
+      when: 'Throughout delivery; depth matters most on high-volume, multi-target or security-sensitive interfaces.',
+      future: 'The same skills extended to AI endpoints, event streams and MCP-exposed tools.'
+    },
+    aiskill: {
+      uses: 'Choosing where an LLM adds value in a flow, writing and versioning prompts, grounding answers in enterprise content.',
+      examples: 'A retrieval step fetches the best-matching knowledge chunks by embedding similarity and passes them as context; the answer must cite them.',
+      deps: 'Model access, an embedding model and vector store, curated source content, evaluation data.',
+      inter: 'Security and responsible-AI controls wrap every call; integration skills carry the data to and from the model.',
+      when: 'When the use case has a measurable outcome and data that is allowed to reach the model.',
+      future: 'Agentic patterns — tools, memory and multi-agent hand-offs — under registry and policy control.'
+    },
+    pref: {
+      uses: 'Faster ramp-up on a Wipro delivery team and broader coverage across platform, cloud and pipeline tasks.',
+      examples: 'An Azure-hosted runtime with pipeline-driven promotion and API policies managed alongside the integration.',
+      deps: 'Certificates and IDs on file; cloud subscriptions and pipeline tooling in the client environment.',
+      inter: 'Each preferred skill removes a hand-off between the developer and the platform, cloud or DevOps team.',
+      when: 'Useful from day one; decisive when the team is small.',
+      future: 'Certification refresh on the current Boomi curriculum, including the AI and agent tracks.'
+    },
+    exp: {
+      uses: 'Independent delivery, mentoring junior developers, stakeholder conversations without escalation.',
+      examples: 'Leading an interface from requirement workshop to production handover.',
+      deps: 'Verifiable project history and references.',
+      inter: 'Depth in integration shortens design time; depth in AI shortens pilot time.',
+      when: 'Assessed at screening and at the technical interview.',
+      future: 'Seniority applied to reusable frameworks and team standards rather than single interfaces.'
+    },
+    comp: {
+      uses: 'Every phase — requirement, build, test, release and support.',
+      examples: 'A root-cause write-up that ends with a reusable fix and a catalog update.',
+      deps: 'Team norms for estimation, documentation and review.',
+      inter: 'The competencies compound: quality lowers support load, documentation speeds the next change.',
+      when: 'Continuously.',
+      future: 'The same habits applied to AI-assisted delivery.'
+    }
+  };
+
+  var PLATFORMS = [
+    {
+      id: 'boomi', name: 'Boomi Enterprise Platform', tag: 'AtomSphere · primary platform for the role', years: '8 years, certified',
+      caps: ['Processes and subprocesses', 'Connectors', 'Profiles and maps', 'REST / SOAP API Management', 'Try / catch and exception handling', 'Scheduling and deployment', 'Atom · Molecule · Atom Cloud'],
+      m: {
+        what: 'Boomi is a cloud-native integration platform (the JD calls it Boomi AtomSphere) for building, deploying and running integration processes and APIs across SaaS, cloud, database and on-premises systems.',
+        how: 'A process is drawn on a canvas from shapes — connectors, maps, decisions, routes, try / catch — then packaged and deployed to a runtime (Atom, Molecule or Atom Cloud) attached to an environment whose extensions hold connection settings and credentials.',
+        where: 'The integration layer between enterprise applications: order, employee, ticket, asset and document flows, plus the APIs that expose them.',
+        uses: 'Application-to-application sync, API enablement, file and database integration, scheduled batch, event-triggered real-time flows, and calls out to AI services.',
+        examples: 'ServiceNow incident to SQL reporting store; Workday worker change to downstream identity; an inbound REST API that validates, maps and writes to SAP.',
+        deps: 'Platform account and role, runtime sizing, connector licenses, environment extensions for each stage, network access from the runtime to targets.',
+        inter: 'API Management fronts processes; Process Reporting and logs feed support; the AtomSphere API drives pipeline deployment; Agentstudio can call processes as agent tools.',
+        when: 'Default choice for the role; strongest where many SaaS endpoints and fast delivery matter more than hand-written code.',
+        future: 'Agent-era platform direction: Agentstudio, Agent Control Tower, MCP Registry in API Control Plane and Boomi Companion for AI-assisted building.'
+      }
+    },
+    {
+      id: 'mule', name: 'MuleSoft Anypoint Platform', tag: 'API-led connectivity', years: '8 years, certified',
+      caps: ['Mule 4 flows and subflows', 'DataWeave', 'RAML / OAS design', 'API Manager policies', 'Exchange assets', 'CloudHub · Runtime Fabric', 'MUnit'],
+      m: {
+        what: 'MuleSoft Anypoint is an integration and API-management platform organized around API-led connectivity: system, process and experience APIs.',
+        how: 'Mule applications are built from flows and connectors, transform data with DataWeave, are published to Exchange, deployed to CloudHub or Runtime Fabric and governed with API Manager policies.',
+        where: 'Enterprises standardized on Salesforce and API-led architecture, often alongside another iPaaS.',
+        uses: 'Reusable system APIs over core applications, process orchestration, partner and mobile experience APIs.',
+        examples: 'A system API over an ERP customer master reused by three process APIs; a rate-limited experience API for a partner portal.',
+        deps: 'Anypoint organization and environments, runtime capacity, an API specification, policy standards, an MUnit test suite.',
+        inter: 'Design patterns carry over to Boomi; in mixed estates Mule APIs are called from Boomi processes and the reverse.',
+        when: 'When the client estate already runs Anypoint or when a three-layer API model is mandated.',
+        future: 'MuleSoft Agent Fabric as an agent control plane: Agent Registry, Agent Broker, MCP Bridge and A2A Bridge, with MCP Connector and Flex Gateway support.'
+      }
+    },
+    {
+      id: 'apigee', name: 'Google Apigee', tag: 'API management and AI gateway', years: '8 years, certified',
+      caps: ['API proxies and shared flows', 'OAuthV2 · VerifyAPIKey · JWT', 'SpikeArrest and Quota', 'Mediation and transformation', 'API products and portal', 'Analytics', 'Apigee X and hybrid'],
+      m: {
+        what: 'Apigee is an API-management platform: proxies in front of backend services with policies for security, traffic, mediation and analytics.',
+        how: 'An API proxy receives the request, runs policies in request and response flows (verify key or token, quota, transform), routes to the target and records analytics; APIs are bundled into products for consumers.',
+        where: 'The managed edge for internal, partner and public APIs; increasingly the gateway in front of LLM and MCP traffic.',
+        uses: 'Securing and rate-limiting integration APIs, partner onboarding through a developer portal, usage analytics and monetization.',
+        examples: 'An OAuth 2.0-protected proxy in front of a Boomi API with spike arrest and a per-product quota.',
+        deps: 'Apigee organization and environments, target endpoints, identity provider, policy and naming standards.',
+        inter: 'Sits in front of Boomi or MuleSoft APIs; shares OAuth and logging standards with them.',
+        when: 'When API exposure needs consistent security, quotas and consumer management independent of the integration runtime.',
+        future: 'Apigee AI gateway capabilities: LLM token policies (PromptTokenLimit, LLMTokenQuota), Model Armor checks, semantic caching, model routing and MCP support.'
+      }
+    },
+    {
+      id: 'llm', name: 'Enterprise AI Services', tag: 'Azure OpenAI / OpenAI and equivalents', years: '5+ years production GenAI',
+      caps: ['Chat and completion APIs', 'Embeddings', 'Vector search', 'Prompt and schema versioning', 'Content filtering', 'Token metering', 'Bedrock · Vertex AI · Claude'],
+      m: {
+        what: 'Hosted LLM platforms reached over REST — Azure OpenAI / OpenAI are the JD preference, with AWS Bedrock, Vertex AI and Claude as equivalents.',
+        how: 'The integration sends a prompt plus context to a deployment endpoint with an API key or an OAuth bearer token and receives text or structured JSON, with usage counted in tokens.',
+        where: 'Any flow that reads, classifies, summarizes or drafts natural-language content.',
+        uses: 'Document and data processing, classification and enrichment, summarization, knowledge retrieval, incident analysis, workflow automation.',
+        examples: 'A support ticket summarized to three bullet points and a category code before it is written to the service-management tool.',
+        deps: 'An approved model deployment, quota, credentials in environment extensions, a prompt and output schema, data-handling approval.',
+        inter: 'Called from Boomi through an HTTP connector; fronted by an API or AI gateway for token limits and logging; grounded by a vector store.',
+        when: 'When the task is language-shaped and the data is cleared to leave the source system.',
+        future: 'Model routing by cost and data class, and agents that call integrations as tools through MCP.'
+      }
+    }
+  ];
+
+  var LIFECYCLE = [
+    { id: 'lc-design', name: 'Design', line: 'Service design to integration design', m: {
+      what: 'Reading the functional, technical and service design and deciding the process structure, connectors, profiles, error strategy and reuse.',
+      how: 'Walk the design with the application SME and architect, list interfaces and dependencies, pick reusable components, and write the estimate and delivery plan.',
+      where: 'Start of every new or changed integration.',
+      uses: 'New interface, API enablement, change request, migration from another tool.',
+      examples: 'A one-page integration design: trigger, source and target, mapping notes, volumes, error handling, security, test approach.',
+      deps: 'Service design, interface specifications, standards, access to people who own the systems.',
+      inter: 'Produces the inputs for build, the test plan and the deployment checklist.',
+      when: 'Before build starts; revisited when requirements move.',
+      future: 'AI-drafted first cut of the process and mapping, reviewed against standards.' } },
+    { id: 'lc-build', name: 'Build', line: 'Processes, APIs, maps, error handling', m: {
+      what: 'Developing the integration in Boomi to the coding standard: processes, subprocesses, connectors, profiles, maps and API components.',
+      how: 'Compose shapes on the canvas, externalize settings as extensions, call the shared error-handling subprocess, and keep components in the agreed folder and naming structure.',
+      where: 'Development environment and runtime.',
+      uses: 'Application integrations, data transformations, workflows, interfaces and APIs.',
+      examples: 'Main process with a try / catch wrapper, a mapping subprocess, and a common notify-and-log subprocess reused across services.',
+      deps: 'Approved design, connectors, sandbox endpoints, reusable-component library.',
+      inter: 'Everything built must be testable, deployable and documented, so build choices drive later effort.',
+      when: 'After design sign-off.',
+      future: 'Boomi DesignGen, Pathfinder and Companion to speed the build; the developer remains accountable for the result.' } },
+    { id: 'lc-test', name: 'Test', line: 'Unit plans, cases, data, defects', m: {
+      what: 'Proving the integration works and fails safely before it moves up.',
+      how: 'Write the unit test plan, scenarios, cases and data; run positive and negative paths; fix defects; keep evidence.',
+      where: 'Development and test environments.',
+      uses: 'Unit testing, integration testing, regression and production validation.',
+      examples: 'Cases for a valid document, a missing mandatory field, a duplicate, a target timeout and an expired credential.',
+      deps: 'Test data that is representative and masked; sandboxes; a stable runtime.',
+      inter: 'Evidence is a gate on the deployment checklist.',
+      when: 'Before every promotion.',
+      future: 'Generated test data and regression packs triggered from the pipeline.' } },
+    { id: 'lc-deploy', name: 'Deploy', line: 'Checklist-driven promotion', m: {
+      what: 'Moving packaged components through development, test, staging and production in a controlled way.',
+      how: 'Package the components, complete the checklist (configuration, dependencies, environment variables, credentials, rollback, validation), deploy, verify and record.',
+      where: 'Each environment boundary.',
+      uses: 'Releases, hotfixes, rollbacks.',
+      examples: 'Deploy a package version to Test, set extensions, run the connection and smoke tests, capture the result, then schedule the process.',
+      deps: 'Change approval, environment access, extension values, a rollback owner.',
+      inter: 'Depends on test evidence; triggers handover and the catalog update.',
+      when: 'Every promotion.',
+      future: 'Deployment through the platform API from a pipeline with approvals.' } },
+    { id: 'lc-handover', name: 'Handover', line: 'Guides, runbooks, support readiness', m: {
+      what: 'Giving support what it needs to run and fix the service.',
+      how: 'Write the service user guide, the support document and the operational handover; walk the support team through monitoring and common failures.',
+      where: 'Between project delivery and operations.',
+      uses: 'Go-live, change of support owner, audit.',
+      examples: 'Runbook with schedules, dependencies, alert meanings, restart steps and escalation contacts.',
+      deps: 'Final configuration, monitoring in place, named owners.',
+      inter: 'Feeds the service catalog and shortens root-cause analysis later.',
+      when: 'Before production cut-over is called complete.',
+      future: 'AI-drafted documentation from deployed components (Boomi Scribe), reviewed by the developer.' } },
+    { id: 'lc-improve', name: 'Improve', line: 'Catalog, lessons, reuse, AI', m: {
+      what: 'Keeping the catalog current and making the next integration cheaper than the last.',
+      how: 'Update catalog entries, record lessons learned, promote reusable components and patterns, and look for automation, performance and AI opportunities.',
+      where: 'After each release and each incident.',
+      uses: 'Reusable frameworks, performance tuning, AI-assisted incident analysis.',
+      examples: 'A common error-handling framework adopted by every new process; a slow map replaced after a volume test.',
+      deps: 'Time reserved in the plan; a place to publish standards.',
+      inter: 'Closes the loop back into design.',
+      when: 'Continuously.',
+      future: 'Agents that watch process logs and propose fixes for a person to approve.' } }
+  ];
+
+  var TECHNIQUES = ['LLM call', 'Prompt design', 'Embeddings', 'Vector search', 'RAG grounding', 'Schema validation', 'Human review'];
+
+  var USECASES = [
+    {
+      id: 'idp', name: 'Intelligent document / data processing', line: 'Extract structured fields from unstructured documents inside an integration flow.',
+      tech: ['LLM call', 'Prompt design', 'Schema validation', 'Human review'],
+      flow: [['Source', 'Document arrives (file, mail, API)', ''], ['Boomi process', 'Convert to text, mask sensitive fields', ''], ['AI service', 'Extract fields as JSON', 'ai'], ['Validate', 'Schema and business rules', 'ctl'], ['Target', 'Create record in system of record', '']],
+      blocks: ['Connector listener or scheduled poll', 'Data Process shape for text preparation', 'HTTP Client connector to the model endpoint', 'JSON profile and map', 'Decision and Try / Catch shapes', 'Exception subprocess'],
+      controls: ['Mask personal data before the call', 'Force JSON output and validate against a profile', 'Route low-confidence or invalid extractions to a review queue'],
+      payload: '{\n  "messages": [\n    {"role": "system", "content": "Extract invoice fields. Reply with JSON only: vendor, invoice_no, date, total, currency."},\n    {"role": "user", "content": "<document text, sensitive fields masked>"}\n  ],\n  "response_format": {"type": "json_object"},\n  "temperature": 0\n}',
+      m: {
+        what: 'Using a model to turn unstructured documents into structured data that an integration can route and load.',
+        how: 'The process prepares text, calls the model with an extraction prompt and a fixed output shape, validates the reply and writes clean records to the target.',
+        where: 'Inbound documents: invoices, forms, correspondence, attachments on tickets.',
+        uses: 'Accounts-payable intake, onboarding forms, claims attachments, contract metadata.',
+        examples: 'Invoice text in; vendor, number, date and total out as JSON; mismatched totals sent to a person.',
+        deps: 'Text extraction for scanned content, an approved model, a JSON schema, a review queue.',
+        inter: 'Feeds classification and workflow automation; shares the validation and exception framework.',
+        when: 'When layouts vary too much for fixed templates.',
+        future: 'Multimodal models reading the page image directly, with the same validation step.' }
+    },
+    {
+      id: 'classify', name: 'Data classification and enrichment', line: 'Label and enrich records in flight so downstream systems can route them.',
+      tech: ['LLM call', 'Prompt design', 'Schema validation'],
+      flow: [['Source', 'Record or message', ''], ['Boomi process', 'Select fields to send', ''], ['AI service', 'Return category and attributes', 'ai'], ['Validate', 'Allowed-value check', 'ctl'], ['Target', 'Record updated with labels', '']],
+      blocks: ['Map to a minimal request profile', 'HTTP Client connector', 'Cross-reference table for allowed values', 'Decision shape', 'Document properties for the labels'],
+      controls: ['Send only the fields needed for the decision', 'Reject labels outside the allowed list', 'Log model, prompt version and result for audit'],
+      payload: '{\n  "messages": [\n    {"role": "system", "content": "Classify the request into one of: ACCESS, HARDWARE, SOFTWARE, DATA, OTHER. Reply as JSON: {category, urgency, reason}."},\n    {"role": "user", "content": "<short description>"}\n  ],\n  "response_format": {"type": "json_object"},\n  "temperature": 0\n}',
+      m: {
+        what: 'Adding categories, priorities or derived attributes to data as it passes through an integration.',
+        how: 'A small prompt with a closed list of labels; the reply is checked against that list before it is trusted.',
+        where: 'Ticket routing, product and vendor data, document tagging, sensitivity labeling.',
+        uses: 'Auto-routing service requests, tagging content for retention, enriching customer records.',
+        examples: 'A free-text request labeled ACCESS with high urgency and routed to the identity team.',
+        deps: 'A maintained label list, examples for the prompt, an audit log.',
+        inter: 'Often the second step after document processing and the trigger for workflow automation.',
+        when: 'When rules alone miss too many cases and a person currently triages.',
+        future: 'Classification as an MCP tool that any governed agent can call.' }
+    },
+    {
+      id: 'summarize', name: 'Automated summarization', line: 'Condense long content to what the receiving system or person needs.',
+      tech: ['LLM call', 'Prompt design', 'Human review'],
+      flow: [['Source', 'Long text or thread', ''], ['Boomi process', 'Trim, chunk, mask', ''], ['AI service', 'Summarize to a set format', 'ai'], ['Validate', 'Length and format check', 'ctl'], ['Target', 'Summary on the record', '']],
+      blocks: ['Data Process shape for chunking', 'HTTP Client connector', 'Flow Control for multi-chunk content', 'Map to target profile', 'Notify shape for logging'],
+      controls: ['Instruct the model to use only the supplied text', 'Keep the source linked beside the summary', 'Sample summaries for human quality review'],
+      payload: '{\n  "messages": [\n    {"role": "system", "content": "Summarize in at most 5 bullet points using only the text provided. If something is unclear, say so."},\n    {"role": "user", "content": "<case notes, masked>"}\n  ],\n  "max_tokens": 300,\n  "temperature": 0.2\n}',
+      m: {
+        what: 'Producing a short, faithful summary of long content as part of a data flow.',
+        how: 'Prepare and chunk the text, summarize with a constrained prompt, check the output and store it with a link to the source.',
+        where: 'Case notes, meeting records, change histories, log bundles.',
+        uses: 'Handover notes on escalated tickets, executive digests, audit summaries.',
+        examples: 'A forty-message ticket thread reduced to five bullet points on the incident record.',
+        deps: 'Token limits per call, a chunking rule, a place to keep the source link.',
+        inter: 'Pairs with incident analysis; shares masking and logging controls.',
+        when: 'When people skim long records and miss the point.',
+        future: 'Summaries produced on demand by an agent through a governed tool call.' }
+    },
+    {
+      id: 'retrieve', name: 'Knowledge retrieval', line: 'Answer from enterprise content using RAG, embeddings and vector search.',
+      tech: ['LLM call', 'Prompt design', 'Embeddings', 'Vector search', 'RAG grounding', 'Human review'],
+      flow: [['Source', 'Question from app or user', ''], ['Boomi process', 'Embed the question', 'ai'], ['Vector store', 'Retrieve top matching chunks', ''], ['AI service', 'Answer using retrieved context', 'ai'], ['Validate', 'Citations present', 'ctl'], ['Target', 'Answer with sources', '']],
+      blocks: ['API Service component for the inbound question', 'HTTP Client connector to the embeddings endpoint', 'Connector or HTTP call to the vector store', 'Combine Documents and Map shapes', 'HTTP Client connector to the chat endpoint'],
+      controls: ['Filter retrieval by the caller entitlements', 'Answer only from retrieved context and cite it', 'Return "not found" rather than guess'],
+      payload: '{\n  "messages": [\n    {"role": "system", "content": "Answer only from CONTEXT. Cite the source id for each statement. If the answer is not in CONTEXT, reply NOT_FOUND."},\n    {"role": "user", "content": "QUESTION: <question>\\nCONTEXT: <retrieved chunks with ids>"}\n  ],\n  "temperature": 0\n}',
+      m: {
+        what: 'Retrieval-augmented generation: find the relevant enterprise content first, then let the model answer from it.',
+        how: 'Content is chunked and embedded into a vector store ahead of time; at run time the question is embedded, similar chunks are retrieved and passed to the model as context.',
+        where: 'Knowledge bases, policies, runbooks, integration documentation.',
+        uses: 'Support assistants, policy lookup, "how does this interface work" for developers.',
+        examples: 'A support analyst asks why an interface failed last night and gets the runbook step with its source.',
+        deps: 'Curated content, an embedding model, a vector database, an ingestion integration to keep it fresh.',
+        inter: 'The ingestion pipeline is itself an integration; retrieval quality drives hallucination risk.',
+        when: 'When answers must come from enterprise content rather than model memory.',
+        future: 'MCP tools complement RAG by reaching live systems for current data.' }
+    },
+    {
+      id: 'incident', name: 'Error / incident analysis', line: 'Use AI on process logs and errors to speed root-cause analysis.',
+      tech: ['LLM call', 'Prompt design', 'RAG grounding', 'Human review'],
+      flow: [['Source', 'Failed execution or alert', ''], ['Boomi process', 'Collect error, context, recent changes', ''], ['AI service', 'Suggest probable cause and next step', 'ai'], ['Validate', 'Match to known-error list', 'ctl'], ['Target', 'Enriched incident for support', '']],
+      blocks: ['Scheduled process reading execution records', 'Try / Catch output and document tracking fields', 'HTTP Client connector', 'Map to the service-management incident profile', 'Process Route to the notification subprocess'],
+      controls: ['Strip payload data from logs before sending', 'Present output as a suggestion, never an automatic fix', 'Feed confirmed causes back into the troubleshooting guide'],
+      payload: '{\n  "messages": [\n    {"role": "system", "content": "You assist integration support. From the error and context, give: probable_cause, evidence, next_step. Use the KNOWN_ERRORS list when it applies."},\n    {"role": "user", "content": "ERROR: <message>\\nCONTEXT: <process, step, target status>\\nKNOWN_ERRORS: <entries>"}\n  ],\n  "response_format": {"type": "json_object"},\n  "temperature": 0\n}',
+      m: {
+        what: 'Applying a model to integration failures so support starts with a probable cause instead of a raw stack trace.',
+        how: 'A process gathers the error, the failing step and recent changes, asks the model for a structured assessment grounded in known errors, and attaches it to the incident.',
+        where: 'Integration operations and support.',
+        uses: 'Faster triage, consistent incident notes, trend spotting across failures.',
+        examples: 'HTTP 401 from a target flagged as an expired credential with the rotation runbook step linked.',
+        deps: 'Access to execution logs, a known-error list, the service-management API.',
+        inter: 'Draws on the service catalog and runbooks; improves them when causes are confirmed.',
+        when: 'When support spends more time reading logs than fixing.',
+        future: 'An operations agent that proposes the fix and waits for approval.' }
+    },
+    {
+      id: 'workflow', name: 'Intelligent workflow automation', line: 'Let AI make bounded decisions inside an orchestrated process.',
+      tech: ['LLM call', 'Prompt design', 'Schema validation', 'Human review'],
+      flow: [['Source', 'Business event', ''], ['Boomi process', 'Orchestrate steps and state', ''], ['AI service', 'Decide next step from options', 'ai'], ['Validate', 'Policy and threshold check', 'ctl'], ['Target', 'Action in target system or approval task', '']],
+      blocks: ['Event or API trigger', 'Process Call and Process Route shapes', 'Business Rules shape', 'HTTP Client connector', 'Approval step through the workflow tool'],
+      controls: ['Limit the model to a fixed list of actions', 'Require human approval above a set impact', 'Record every decision with inputs and model version'],
+      payload: '{\n  "messages": [\n    {"role": "system", "content": "Choose exactly one action from: APPROVE, REQUEST_INFO, ESCALATE. Reply as JSON: {action, reason}."},\n    {"role": "user", "content": "<request summary and policy extract>"}\n  ],\n  "response_format": {"type": "json_object"},\n  "temperature": 0\n}',
+      m: {
+        what: 'An orchestrated process in which a model makes a bounded choice and the integration carries it out.',
+        how: 'The process holds the state and the rules; the model picks from allowed actions; anything outside policy goes to a person.',
+        where: 'Approvals, service requests, exception handling, onboarding.',
+        uses: 'Auto-approving low-risk requests, drafting replies, deciding which queue or system acts next.',
+        examples: 'A standard access request approved automatically; a privileged one escalated with the reason attached.',
+        deps: 'Clear policy, an action list, an approval channel, an audit trail.',
+        inter: 'Builds on classification and summarization; needs the strongest access and audit controls.',
+        when: 'When the decision is frequent, low-risk and well described by policy.',
+        future: 'Multi-step agents built in an agent studio, governed by a control tower and calling integrations as tools.' }
+    }
+  ];
+
+  var AGENTIC = [
+    { id: 'ag-studio', name: 'Boomi Agentstudio', vendor: 'Boomi', line: 'Design, govern and orchestrate AI agents on the Boomi platform.', m: {
+      what: 'Boomi’s environment for building AI agents and giving them tools — APIs, integrations, prompts, MCP servers and database access connected to the platform.',
+      how: 'Agent Designer defines the agent, its tools and guardrails; agents register automatically for oversight and can be invoked from an integration process with an Agent Step.',
+      where: 'Alongside the integration and API layers of the Boomi Enterprise Platform.',
+      uses: 'Order-status agents, support triage agents, data-steward assistants that act through existing integrations.',
+      examples: 'An agent whose only tools are two governed Boomi APIs: look up an order and open a ticket.',
+      deps: 'Platform edition with Agentstudio, a model connection, tools published as APIs or MCP servers.',
+      inter: 'Uses API Management and integration processes as tools; governed by Agent Control Tower.',
+      when: 'When the action an agent must take already exists as a Boomi integration or API.',
+      future: 'Agents embedded in business applications and orchestrated across providers.' } },
+    { id: 'ag-tower', name: 'Agent Control Tower', vendor: 'Boomi', line: 'Central registry, monitoring and control for agents from Boomi and other providers.', m: {
+      what: 'The governance side of Agentstudio: a registry of agents with monitoring and access control.',
+      how: 'Boomi agents register automatically; agents from providers such as Amazon Bedrock, Salesforce Agentforce and Microsoft Copilot can be registered; anomaly detection flags irregular behavior and a kill switch disables a compromised agent.',
+      where: 'Security, platform and integration teams that need one view of agent activity.',
+      uses: 'Inventory of agents, usage and error monitoring, incident response.',
+      examples: 'An agent that starts calling a tool far more often than normal is flagged and disabled.',
+      deps: 'Agents registered with owners; monitoring thresholds; an incident process.',
+      inter: 'Complements API-gateway logging and the service catalog; the agent equivalent of process monitoring.',
+      when: 'As soon as more than one team is building agents.',
+      future: 'Policy enforcement across every agent, model and MCP interaction from one control plane.' } },
+    { id: 'ag-mcpreg', name: 'MCP Registry in API Control Plane', vendor: 'Boomi', line: 'Governs which MCP servers the organization can use.', m: {
+      what: 'A central hub in Boomi API Control Plane for approving MCP servers, added in the May 2026 release.',
+      how: 'It aggregates servers from the official MCP registry and the internal Boomi registry; API products marked MCP-enabled appear automatically, and servers added to the Server Catalog become available as MCP sources in Agentstudio.',
+      where: 'Between API management and agent building.',
+      uses: 'Publishing an existing API product as an agent tool; approving third-party MCP servers.',
+      examples: 'A "customer lookup" API product is marked MCP-enabled and shows up as a tool for approved agents.',
+      deps: 'API products with clear specifications; an AI agent key for authentication; an approval owner.',
+      inter: 'Turns integration and API assets into agent tools without rebuilding them.',
+      when: 'When agents need governed access to enterprise APIs.',
+      future: 'The API catalog and the tool catalog becoming one governed inventory.' } },
+    { id: 'ag-companion', name: 'Boomi Companion', vendor: 'Boomi', line: 'Agent skills that let AI coding tools build on Boomi.', m: {
+      what: 'A suite of agent skills and plug-ins, launched at Boomi World 2026, that gives third-party AI coding agents deep knowledge of the Boomi platform.',
+      how: 'From a tool such as Claude Code, a natural-language request becomes designed, built, tested, deployed and diagnosed work on a Boomi account.',
+      where: 'The developer workstation and pipeline.',
+      uses: 'Drafting integration processes, creating APIs and agents, diagnosing failed runs.',
+      examples: 'Ask for an order-sync process with error quarantine; review what is generated; harden it and deploy.',
+      deps: 'A supported AI coding tool, platform credentials with the right role, team review standards.',
+      inter: 'Speeds the build and test steps of the lifecycle; does not replace design review or the deployment checklist.',
+      when: 'For first drafts, repetitive builds and diagnosis — with a developer accountable for the output.',
+      future: 'Agentic engineering as a normal part of integration delivery.' } },
+    { id: 'ag-fabric', name: 'MuleSoft Agent Fabric', vendor: 'MuleSoft', line: 'Discover, orchestrate, govern and observe agents and MCP servers.', m: {
+      what: 'MuleSoft’s control plane for AI agents, MCP servers and APIs built across platforms.',
+      how: 'Agent Registry catalogs agents and tools (scanners discover them in Agentforce, Bedrock, Vertex AI and Copilot Studio); Agent Broker routes work across agents; MCP Bridge and A2A Bridge make existing APIs and non-compliant agents usable.',
+      where: 'Enterprises with agents on several platforms and an Anypoint estate.',
+      uses: 'A single inventory of agents, policy on agent traffic, cross-agent orchestration.',
+      examples: 'A Copilot Studio agent bridged to A2A so it can be governed and orchestrated with native agents.',
+      deps: 'Anypoint organization, Flex Gateway for policy enforcement, agent owners.',
+      inter: 'Same idea as Boomi Agent Control Tower; in mixed estates the two inventories must be reconciled.',
+      when: 'When MuleSoft is the API backbone and agents are multiplying.',
+      future: 'Agent networks built and deployed from CI/CD pipelines.' } },
+    { id: 'ag-apigee', name: 'Apigee AI gateway', vendor: 'Google Cloud', line: 'API-gateway policies applied to LLM and MCP traffic.', m: {
+      what: 'AI-specific capabilities added to Apigee API proxies.',
+      how: 'LLM token policies (PromptTokenLimit, LLMTokenQuota) throttle and budget token use; Model Armor screens prompts and responses; semantic caching and model routing cut cost; MCP proxies are secured with OAuth.',
+      where: 'In front of model endpoints and MCP servers.',
+      uses: 'Token budgets per team or product, prompt-injection screening, usage analytics by model and application.',
+      examples: 'A product-level token quota that stops one application exhausting the shared model deployment.',
+      deps: 'Apigee organization, model endpoints as targets, policy standards.',
+      inter: 'Sits between Boomi processes and the model; gives the cost and security evidence the JD asks for.',
+      when: 'When several integrations share model capacity or when AI calls need the same governance as APIs.',
+      future: 'One gateway for APIs, models, agents and tools.' } },
+    { id: 'ag-mcp', name: 'Model Context Protocol (MCP)', vendor: 'Open standard', line: 'A standard way for agents to discover and call tools.', m: {
+      what: 'An open protocol that lets AI agents connect to tools and data sources in a uniform way.',
+      how: 'An MCP server describes its tools; an agent lists them and calls them with structured arguments; the server runs the action and returns a result.',
+      where: 'Between agents and the systems they act on.',
+      uses: 'Exposing an integration or API once and reusing it across many agents.',
+      examples: 'A "create incident" tool backed by an existing integration process.',
+      deps: 'An MCP server, authentication, a registry of approved servers.',
+      inter: 'Complements RAG: retrieval brings curated content, MCP reaches live systems.',
+      when: 'When more than one agent needs the same enterprise action.',
+      future: 'Tool catalogs governed like API catalogs.' } },
+    { id: 'ag-a2a', name: 'Agent2Agent (A2A)', vendor: 'Open standard', line: 'A protocol for agents to work with each other.', m: {
+      what: 'An interoperability protocol that describes how one agent hands work to another.',
+      how: 'Agents publish a card describing what they can do; a broker or another agent discovers it and delegates a task.',
+      where: 'Multi-agent workflows across vendors.',
+      uses: 'A service agent delegating a billing question to a finance agent.',
+      examples: 'An agent bridged to A2A so it can join an orchestrated network.',
+      deps: 'A2A-compliant agents or a bridge, a registry, policy on agent traffic.',
+      inter: 'Sits beside MCP: MCP is agent-to-tool, A2A is agent-to-agent.',
+      when: 'When work crosses agent or vendor boundaries.',
+      future: 'Brokered agent networks with rate limits and audit like any API.' } }
+  ];
+
+  var CONTROLS = [
+    { id: 'ct-sec', name: 'AI security', risk: 'Prompt injection, data exfiltration through prompts, abuse of model endpoints.', layer: 'Input screening at the gateway; least-privilege tool access; allow-listed endpoints from the runtime.', fw: 'OWASP LLM Top 10 · MITRE ATLAS', m: {
+      what: 'Protecting AI-enabled integrations from attacks that target the model or the data sent to it.',
+      how: 'Screen prompts and responses, restrict what tools and data a call can reach, authenticate every call and log it.',
+      where: 'API or AI gateway, integration process, model platform.',
+      uses: 'Any integration that passes user-supplied or external text to a model.',
+      examples: 'An email body containing "ignore previous instructions" is treated as data and screened before the call.',
+      deps: 'Gateway policies, content-safety service, security review of prompts.',
+      inter: 'Shares identity and logging with access controls; informs incident response.',
+      when: 'Always; depth scales with exposure.',
+      future: 'Runtime policy across every agent, model and tool interaction.' } },
+    { id: 'ct-priv', name: 'Data privacy', risk: 'Personal or regulated data sent to a model without need or approval.', layer: 'Field-level minimization and masking in the map before the call; approved regions and retention settings.', fw: 'HIPAA · ISO 27001 · client data policy', m: {
+      what: 'Making sure only data that is allowed and needed reaches the model.',
+      how: 'Classify the fields, send the minimum, mask identifiers in the map, and use model deployments with approved data handling.',
+      where: 'The mapping step of the integration and the choice of model deployment.',
+      uses: 'Health, financial, employee and customer data flows.',
+      examples: 'A member identifier replaced with a token before summarization and restored afterwards.',
+      deps: 'Data-classification rules, masking functions, approved deployments.',
+      inter: 'Decisions here limit which use cases are possible.',
+      when: 'At design, before any payload is defined.',
+      future: 'Automated data classification in the flow (Boomi DataDetective-style) feeding masking rules.' } },
+    { id: 'ct-access', name: 'Access controls', risk: 'Shared keys, over-broad permissions, answers that reveal content the caller should not see.', layer: 'OAuth 2.0 or managed identity per integration; credentials as encrypted environment extensions; entitlement filters on retrieval.', fw: 'NIST SP 800-207 · OAuth 2.0 / OIDC', m: {
+      what: 'Controlling who and what can call the model, the tools and the data.',
+      how: 'Give each integration its own identity, store secrets in environment extensions, rotate them, and filter retrieval by the caller’s entitlements.',
+      where: 'Runtime, gateway, vector store, target systems.',
+      uses: 'Every AI call and every tool exposed to an agent.',
+      examples: 'A retrieval call that passes the user’s groups so only permitted documents are searched.',
+      deps: 'Identity provider, secret-rotation process, role model.',
+      inter: 'Underpins privacy and security; checked on the deployment checklist.',
+      when: 'At design and at every deployment.',
+      future: 'Per-agent identity with conditional access.' } },
+    { id: 'ct-halluc', name: 'Hallucination management', risk: 'Confident but wrong output written into systems of record.', layer: 'Grounding with retrieved context; structured output validated against a profile; thresholds and human review.', fw: 'NIST AI RMF (Measure, Manage)', m: {
+      what: 'Reducing and catching model output that is not supported by the input.',
+      how: 'Ground the prompt in supplied context, require citations or a fixed JSON shape, validate against allowed values, and send doubtful results to a person.',
+      where: 'The validation step after every model call.',
+      uses: 'Extraction, classification, retrieval answers, automated decisions.',
+      examples: 'An extracted total that does not equal the sum of line items is routed to review instead of posted.',
+      deps: 'Schemas, business rules, an evaluation set, a review queue.',
+      inter: 'Uses the same exception framework as other integration errors.',
+      when: 'On every AI step that writes to a system of record.',
+      future: 'Continuous evaluation gates on each prompt or model change.' } },
+    { id: 'ct-resp', name: 'Responsible AI', risk: 'Unexplained automated decisions, bias, no accountability trail.', layer: 'Human approval for consequential actions; decision logs with inputs, prompt and model version; documented purpose and owner.', fw: 'NIST AI RMF · ISO/IEC 42001 · EU AI Act', m: {
+      what: 'Using AI in a way that is accountable, explainable and proportionate to the impact.',
+      how: 'Record the purpose and owner of each AI use, keep people in the loop where the outcome matters, and log enough to explain a decision later.',
+      where: 'Governance intake, workflow design, audit.',
+      uses: 'Approvals, eligibility, prioritization and anything affecting a person.',
+      examples: 'Auto-approval limited to low-risk requests, with every decision reviewable.',
+      deps: 'A governance intake, risk tiers, an audit store.',
+      inter: 'Sets the limits inside which the other controls operate.',
+      when: 'Before a use case is approved and at each change.',
+      future: 'AI bills of materials and provenance records per release.' } },
+    { id: 'ct-cost', name: 'Token and cost governance', risk: 'Runaway usage, one integration starving others, unpredictable spend.', layer: 'Token limits and quotas at the gateway; max_tokens and caching in the process; usage reported per integration.', fw: 'FinOps practice · gateway token policies', m: {
+      what: 'Keeping model usage within budget and fair across integrations.',
+      how: 'Cap prompt size, set quotas per consumer, cache repeat requests, choose the smallest adequate model and report usage.',
+      where: 'AI gateway and process configuration.',
+      uses: 'Shared model deployments, high-volume flows, batch backfills.',
+      examples: 'A nightly batch throttled so interactive integrations keep their capacity.',
+      deps: 'Usage metrics, quotas, a cost owner.',
+      inter: 'Rate-limit responses must be handled by the retry logic in the process.',
+      when: 'From the first pilot.',
+      future: 'Model routing by cost and data class.' } }
+  ];
+
+  var SIM_STEPS = ['Trigger', 'Validate & map', 'Call AI service', 'Validate response', 'Deliver to target', 'Log & notify'];
+  var SIMS = [
+    { id: 'ok', name: 'Clean run', result: ['ok', 'Completed'], steps: [
+      ['ok', 'Document received from the source system.'], ['ok', 'Request profile valid; sensitive fields masked.'], ['ok', 'HTTP 200 from the model endpoint.'], ['ok', 'Reply matches the JSON profile; values allowed.'], ['ok', 'Record written to the target.'], ['ok', 'Execution logged with prompt version and token usage.']] },
+    { id: 'rate', name: 'Model rate limit (HTTP 429)', result: ['ok', 'Completed after retry'], steps: [
+      ['ok', 'Document received from the source system.'], ['ok', 'Request profile valid; sensitive fields masked.'], ['warn', 'HTTP 429. Try / Catch retries after the Retry-After interval; second attempt returns 200.'], ['ok', 'Reply matches the JSON profile.'], ['ok', 'Record written to the target.'], ['ok', 'Retry count logged; no alert raised.']] },
+    { id: 'schema', name: 'Invalid source document', result: ['crit', 'Stopped — sent to exception handling'], steps: [
+      ['ok', 'Document received from the source system.'], ['crit', 'Mandatory field missing. Exception shape raises a business error; no AI call is made.'], ['idle', 'Skipped.'], ['idle', 'Skipped.'], ['idle', 'Skipped.'], ['warn', 'Document quarantined; support notified with the failing field and document reference.']] },
+    { id: 'auth', name: 'Expired OAuth token (HTTP 401)', result: ['ok', 'Completed after token refresh'], steps: [
+      ['ok', 'Document received from the source system.'], ['ok', 'Request profile valid; sensitive fields masked.'], ['warn', 'HTTP 401. Token refreshed from the identity provider and the call repeated once; 200 returned.'], ['ok', 'Reply matches the JSON profile.'], ['ok', 'Record written to the target.'], ['ok', 'Token refresh logged for the credentials owner.']] },
+    { id: 'lowconf', name: 'Unsupported AI output', result: ['warn', 'Held for human review'], steps: [
+      ['ok', 'Document received from the source system.'], ['ok', 'Request profile valid; sensitive fields masked.'], ['ok', 'HTTP 200 from the model endpoint.'], ['warn', 'Category is outside the allowed list. Result is not trusted.'], ['warn', 'Nothing written to the system of record; item placed in the review queue.'], ['ok', 'Reviewer notified; case added to the evaluation set.']] }
+  ];
+
+  var CHECKLIST = [
+    ['Configurations', ['Package version and release notes recorded', 'Process schedules and listeners defined for the target environment', 'Connection settings externalized as environment extensions']],
+    ['Dependencies', ['Shared components and subprocesses deployed at the required version', 'Upstream and downstream systems ready and owners informed', 'API products, plans and consumers in place']],
+    ['Environment variables', ['Environment extensions and process properties set for this stage', 'Endpoints point at the correct environment', 'Model deployment name, prompt version and token limits set']],
+    ['Credentials', ['Secrets stored encrypted; none in components or documents', 'OAuth clients and API keys issued for this environment', 'Connection tests passed with the deployed credentials']],
+    ['Rollback requirements', ['Previous package version identified and redeployable', 'Data-correction approach agreed for partial runs', 'Rollback owner and decision time named']],
+    ['Validation steps', ['Smoke test executed with expected result', 'Monitoring and alerts confirmed', 'Support handover and catalog entry updated']]
+  ];
+
+  var PLAN = [
+    ['Days 1 – 30', 'Learn the estate', ['Read the service designs, coding standards and reusable-component library', 'Get access to every environment and shadow one deployment end to end', 'Take first integration from design to test with a unit test plan', 'Review the service catalog for gaps']],
+    ['Days 31 – 60', 'Own delivery', ['Deliver integrations end to end including checklist, guides and handover', 'Propose a common error-handling and logging subprocess where one is missing', 'Pilot one AI integration with full controls — incident summarization is a low-risk start', 'Introduce AI-assisted documentation under review']],
+    ['Days 61 – 90', 'Raise the baseline', ['Publish reusable patterns and a troubleshooting guide', 'Bring the service catalog fully current for owned services', 'Measure the AI pilot and decide whether to extend it', 'Show one API exposed as a governed MCP tool as a proof of concept']]
+  ];
+
+  var QA = [
+    ['How do you structure error handling in a Boomi process?', 'Wrap the main path in a Try / Catch shape; raise business errors with an Exception shape; send every failure to one shared error subprocess through a Process Call or Process Route so logging, notification and quarantine behave the same everywhere; record tracked fields so a document can be found in Process Reporting.'],
+    ['Atom, Molecule or Atom Cloud — how do you choose?', 'An Atom is a single-node runtime, right for modest volume or on-premises reach. A Molecule is a clustered runtime for high availability and volume. An Atom Cloud is a multi-tenant cloud runtime when nothing needs to sit inside the network. Decide on volume, availability and where the endpoints are.'],
+    ['How do you call Azure OpenAI from Boomi?', 'An HTTP Client connector to the deployment endpoint with a JSON request profile; authenticate with an API key header or a Microsoft Entra ID bearer token; hold the endpoint, deployment name and credentials as environment extensions; map the reply through a JSON profile; handle 429 and 5xx with retry and 401 with a token refresh.'],
+    ['How do you manage hallucination in an integration?', 'Ground the prompt in supplied context, set temperature low, require a fixed JSON shape, validate against a profile and allowed values, compare against business rules, and route anything doubtful to a person. Nothing unvalidated is written to a system of record.'],
+    ['What is on your deployment checklist?', 'Configurations, dependencies, environment variables and extensions, credentials, rollback requirements and validation steps — each with an owner and evidence. The interactive checklist in this command center follows that structure.'],
+    ['Explain RAG in integration terms.', 'Two integrations: an ingestion flow that chunks and embeds content into a vector store and keeps it fresh, and a run-time flow that embeds the question, retrieves matching chunks, and passes them to the model as context so the answer can cite its sources.'],
+    ['How do you approach CI/CD for Boomi?', 'Treat packaged components as the release unit, promote the same package through environments, keep environment differences in extensions, automate deployment through the platform API from a pipeline, and gate promotion on test evidence.'],
+    ['How do you keep a service catalog current?', 'Make the catalog update a checklist item so a deployment is not complete without it; hold one entry per service with interfaces, dependencies, owner and runbook; review it after incidents and ownership changes.'],
+    ['Where would you not use AI in an integration?', 'Where a deterministic rule does the job, where the data may not leave the source system, where a wrong answer cannot be caught by validation, or where latency and cost outweigh the benefit.']
+  ];
+
+  var SOURCES = [
+    ['Boomi Agentstudio — product page', 'https://boomi.com/platform/agentstudio/'],
+    ['Boomi AI release notes, May 2026 — MCP Registry', 'https://help.boomi.com/docs/Atomsphere/Release_Notes/AI/ai_may_2026'],
+    ['Boomi Companion — product page', 'https://boomi.com/platform/companion/'],
+    ['Boomi training and certifications', 'https://boomi.com/services/training/'],
+    ['MuleSoft Agent Fabric overview', 'https://docs.mulesoft.com/general/agent-fabric-overview'],
+    ['Apigee AI gateway capabilities', 'https://docs.cloud.google.com/apigee/docs/api-platform/get-started/ai-capabilities'],
+    ['Apigee LLM token policies', 'https://docs.cloud.google.com/apigee/docs/api-platform/tutorials/using-ai-token-policies'],
+    ['Wipro and Boomi partnership', 'https://www.wipro.com/partners/boomi/']
+  ];
+
+  var TOPO = {
+    nodes: [
+      { id: 'tower', label: 'Agent Control Tower', ring: 0, kind: 'control', ref: 'ag-tower' },
+      { id: 'boomi', label: 'Boomi process', ring: 1, kind: 'integration', ref: 'boomi' },
+      { id: 'apim', label: 'API / AI gateway', ring: 1, kind: 'integration', ref: 'ag-apigee' },
+      { id: 'mcp', label: 'MCP Registry', ring: 1, kind: 'control', ref: 'ag-mcpreg' },
+      { id: 'agent', label: 'Agent (Agentstudio)', ring: 1, kind: 'agent', ref: 'ag-studio' },
+      { id: 'llm', label: 'Azure OpenAI', ring: 2, kind: 'ai', ref: 'llm' },
+      { id: 'vec', label: 'Vector store', ring: 2, kind: 'ai', ref: 'retrieve' },
+      { id: 'snow', label: 'ServiceNow', ring: 2, kind: 'system', ref: 'incident' },
+      { id: 'wd', label: 'Workday', ring: 2, kind: 'system', ref: 'boomi' },
+      { id: 'sap', label: 'SAP', ring: 2, kind: 'system', ref: 'boomi' },
+      { id: 'sql', label: 'SQL database', ring: 2, kind: 'system', ref: 'boomi' },
+      { id: 'ext', label: 'External agent', ring: 2, kind: 'agent', ref: 'ag-a2a' }
+    ],
+    links: [['tower', 'agent'], ['tower', 'ext'], ['tower', 'mcp'], ['agent', 'mcp'], ['mcp', 'apim'], ['agent', 'apim'], ['apim', 'boomi'], ['apim', 'llm'], ['boomi', 'llm'], ['boomi', 'vec'], ['boomi', 'snow'], ['boomi', 'wd'], ['boomi', 'sap'], ['boomi', 'sql'], ['agent', 'ext']],
+    kinds: { control: ['Control plane', '#a78bfa'], integration: ['Integration and gateway', '#38bdf8'], agent: ['Agents', '#fbbf24'], ai: ['AI services', '#34d399'], system: ['Systems of record', '#94a3b8'] }
+  };
+
+  return { META: META, CATS: CATS, REQS: REQS, CAT_TEMPLATES: CAT_TEMPLATES, PLATFORMS: PLATFORMS, LIFECYCLE: LIFECYCLE,
+    TECHNIQUES: TECHNIQUES, USECASES: USECASES, AGENTIC: AGENTIC, CONTROLS: CONTROLS, SIM_STEPS: SIM_STEPS, SIMS: SIMS,
+    CHECKLIST: CHECKLIST, PLAN: PLAN, QA: QA, SOURCES: SOURCES, TOPO: TOPO };
+})();
+</script>
+<script>
+/* UCS Command Center runtime — theme, nav, KPIs, 9-section modals, charts, simulator, checklist, 3D map. */
+(function () {
+  'use strict';
+
+  var CC = window.CC;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+  var REDUCED = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  var THEME_KEY = 'ucs-boomi-cc-theme';
+  var CHK_KEY = 'ucs-boomi-cc-checklist';
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  var store = {
+    get: function (k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { window.localStorage.setItem(k, v); } catch (e) { /* private mode or blocked */ } }
+  };
+  function bindOpen(el, fn) {
+    el.addEventListener('click', fn);
+    el.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); fn(ev); }
+    });
+  }
+
+  /* ------------------------------------------------------------------ modal */
+  var SECTION_DEFS = [
+    ['what', 'What it is'], ['how', 'How it works'], ['where', 'Where used'], ['uses', 'Use cases'], ['examples', 'Examples'],
+    ['deps', 'Dependencies'], ['inter', 'Interdependencies'], ['when', 'When to use'], ['future', 'Future thinking']
+  ];
+  var lastFocus = null;
+  var back = $('#modalBack');
+
+  function openModal(o) {
+    lastFocus = document.activeElement;
+    $('#modalKicker').textContent = o.kicker || '';
+    $('#modalTitle').textContent = o.title || '';
+    $('#modalSub').textContent = o.sub || '';
+    var toc = '';
+    var body = '';
+    SECTION_DEFS.forEach(function (d, i) {
+      var v = o.sections && o.sections[d[0]];
+      toc += '<a href="#msec-' + d[0] + '" data-target="msec-' + d[0] + '">' + (i + 1) + ' · ' + d[1] + '</a>';
+      body += '<div class="msec' + (v ? '' : ' na') + '" id="msec-' + d[0] + '"><h4>' + (i + 1) + ' · ' + d[1] + '</h4><p>' +
+        esc(v || 'Not applicable for this layer.') + '</p></div>';
+    });
+    $('#modalToc').innerHTML = toc;
+    $('#modalBody').innerHTML = body;
+    back.classList.add('open');
+    back.setAttribute('aria-hidden', 'false');
+    back.scrollTop = 0;
+    document.body.style.overflow = 'hidden';
+    $('#modalClose').focus();
+  }
+  function closeModal() {
+    if (!back.classList.contains('open')) { return; }
+    back.classList.remove('open');
+    back.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (lastFocus && lastFocus.focus) { lastFocus.focus(); }
+  }
+  $('#modalClose').addEventListener('click', closeModal);
+  back.addEventListener('mousedown', function (ev) { if (ev.target === back) { closeModal(); } });
+  $('#modalToc').addEventListener('click', function (ev) {
+    var a = ev.target.closest('a[data-target]');
+    if (!a) { return; }
+    ev.preventDefault();
+    var t = document.getElementById(a.getAttribute('data-target'));
+    if (t) { t.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' }); }
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (!back.classList.contains('open')) { return; }
+    if (ev.key === 'Escape') { closeModal(); return; }
+    if (ev.key === 'Tab') {
+      var f = $$('a[href], button:not([disabled])', $('#modal'));
+      if (!f.length) { return; }
+      var first = f[0];
+      var last = f[f.length - 1];
+      if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); last.focus(); }
+      else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+    }
+  });
+
+  /* registry so any element (tile, row, 3D node) can open a detail by id */
+  var REG = {};
+  function register(id, kicker, title, sub, m) {
+    REG[id] = function () { openModal({ kicker: kicker, title: title, sub: sub, sections: m }); };
+    return REG[id];
+  }
+  window.UCS = { openModal: openModal, closeModal: closeModal, open: function (id) { if (REG[id]) { REG[id](); } } };
+
+  /* ------------------------------------------------------------------ theme */
+  var themeListeners = [];
+  function currentTheme() { return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; }
+  function paintThemeBtn() { $('#themeBtn').textContent = currentTheme() === 'dark' ? '☾ Dark' : '☀ Light'; }
+  $('#themeBtn').addEventListener('click', function () {
+    var next = currentTheme() === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    store.set(THEME_KEY, next);
+    paintThemeBtn();
+    themeListeners.forEach(function (fn) { fn(next); });
+  });
+  paintThemeBtn();
+
+  /* ------------------------------------------------------------------ nav */
+  var NAV = [
+    ['Overview', [['overview', 'Role and fit'], ['crosswalk', 'JD crosswalk']]],
+    ['Delivery', [['platforms', 'Platforms'], ['lifecycle', 'Delivery lifecycle'], ['simulator', 'Error-handling simulator'], ['checklist', 'Deployment checklist']]],
+    ['AI and agents', [['usecases', 'AI integration patterns'], ['agentic', 'Agentic integration'], ['controls', 'Controls']]],
+    ['Pursuit', [['plan', 'First 90 days'], ['interview', 'Interview questions'], ['sources', 'Sources and method']]]
+  ];
+  (function buildNav() {
+    var nav = $('#nav');
+    var html = '';
+    NAV.forEach(function (g, gi) {
+      html += '<div class="nav-group" aria-expanded="true"><button type="button" aria-controls="navg' + gi + '">' + esc(g[0]) + '</button><div class="nav-items" id="navg' + gi + '">';
+      g[1].forEach(function (it) {
+        html += '<a href="#' + it[0] + '" data-sec="' + it[0] + '"><span class="nav-dot"></span>' + esc(it[1]) + '</a>';
+      });
+      html += '</div></div>';
+    });
+    nav.innerHTML = html;
+    $$('.nav-group > button', nav).forEach(function (b) {
+      b.addEventListener('click', function () {
+        var g = b.parentNode;
+        g.setAttribute('aria-expanded', g.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
+      });
+    });
+    function setDrawer(open) {
+      document.body.classList.toggle('nav-open', open);
+      $('#navToggle').setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    $('#navToggle').addEventListener('click', function () { setDrawer(!document.body.classList.contains('nav-open')); });
+    $('#scrim').addEventListener('click', function () { setDrawer(false); });
+    nav.addEventListener('click', function (ev) { if (ev.target.closest('a')) { setDrawer(false); } });
+
+    var links = {};
+    $$('a[data-sec]', nav).forEach(function (a) { links[a.getAttribute('data-sec')] = a; });
+    function activate(id) {
+      Object.keys(links).forEach(function (k) { links[k].classList.toggle('active', k === id); });
+      if (links[id]) { links[id].closest('.nav-group').setAttribute('aria-expanded', 'true'); }
+    }
+    if ('IntersectionObserver' in window) {
+      var spy = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { activate(e.target.id); } });
+      }, { rootMargin: '-18% 0px -72% 0px', threshold: 0 });
+      Object.keys(links).forEach(function (id) { var s = document.getElementById(id); if (s) { spy.observe(s); } });
+    }
+    activate('overview');
+  })();
+
+  /* ------------------------------------------------------------------ KPIs */
+  var TOTAL = CC.REQS.length;
+  var VERIFY = CC.REQS.filter(function (r) { return r[4] === 'verify'; }).length;
+  (function buildKpis() {
+    var K = [
+      { n: 8, suf: ' yrs', label: 'Boomi · MuleSoft · Apigee', sub: 'Role asks 3+ years of Boomi', pct: 100, mark: 37.5 },
+      { n: 30, suf: '+ yrs', label: 'Integration and application development', sub: 'Role asks 5–8 years', pct: 100, mark: 26.7 },
+      { n: TOTAL, suf: '/' + TOTAL, label: 'Job-description lines mapped', sub: VERIFY + ' to verify before submission', pct: Math.round((TOTAL - VERIFY) / TOTAL * 100) },
+      { n: CC.USECASES.length, suf: '/6', label: 'AI use cases with a reference pattern', sub: 'All six named in the role', pct: 100 },
+      { n: 5, suf: '/5', label: 'Responsibility areas covered', sub: 'Design · test · deploy · AI · knowledge', pct: 100 },
+      { n: 400, suf: '+', label: 'Enterprise engagements', sub: 'UCS Solutions, since 1993' }
+    ];
+    $('#kpis').innerHTML = K.map(function (k) {
+      return '<div class="kpi glass reveal"><div class="kpi-val"><span data-count="' + k.n + '">0</span><small>' + esc(k.suf) + '</small></div>' +
+        '<div class="kpi-label">' + esc(k.label) + '</div><div class="kpi-sub">' + esc(k.sub) + '</div>' +
+        (k.pct === undefined ? '' : '<div class="bar" aria-hidden="true"><i data-pct="' + k.pct + '"></i>' +
+          (k.mark ? '<b style="left:' + k.mark + '%" title="Asked"></b>' : '') + '</div>') + '</div>';
+    }).join('');
+    function finish() {
+      $$('[data-count]').forEach(function (el) { el.textContent = el.getAttribute('data-count'); });
+      $$('.bar > i[data-pct]').forEach(function (el) { el.style.width = el.getAttribute('data-pct') + '%'; });
+    }
+    if (REDUCED) { finish(); return; }
+    $$('[data-count]').forEach(function (el) {
+      var to = +el.getAttribute('data-count');
+      var t0 = null;
+      function frame(ts) {
+        if (t0 === null) { t0 = ts; }
+        var p = Math.min(1, (ts - t0) / 1100);
+        el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) { window.requestAnimationFrame(frame); }
+      }
+      window.requestAnimationFrame(frame);
+    });
+    window.setTimeout(function () {
+      $$('.bar > i[data-pct]').forEach(function (el) { el.style.width = el.getAttribute('data-pct') + '%'; });
+    }, 120);
+    window.setTimeout(finish, 1700); /* background tabs do not fire animation frames */
+  })();
+
+  /* ------------------------------------------------------------------ crosswalk */
+  (function buildCrosswalk() {
+    var cat = 'all';
+    var query = '';
+    var tbody = $('#xwTable tbody');
+    var filters = $('#xwFilters');
+    var cats = [['all', 'All sections']].concat(Object.keys(CC.CATS).map(function (k) { return [k, CC.CATS[k]]; }));
+    filters.innerHTML = cats.map(function (c) {
+      var n = c[0] === 'all' ? TOTAL : CC.REQS.filter(function (r) { return r[0] === c[0]; }).length;
+      return '<button type="button" class="fbtn" data-cat="' + c[0] + '" aria-pressed="' + (c[0] === 'all') + '">' + esc(c[1]) + ' · ' + n + '</button>';
+    }).join('');
+    $('#xwCount').textContent = (TOTAL - VERIFY) + ' of ' + TOTAL + ' mapped';
+    $('#xwVerify').textContent = VERIFY + ' to verify';
+    if (!VERIFY) { $('#xwVerify').hidden = true; }
+
+    CC.REQS.forEach(function (r, i) {
+      var t = CC.CAT_TEMPLATES[r[0]];
+      register('req-' + i, CC.CATS[r[0]], r[1], r[4] === 'verify' ? 'Status: verify before submission' : 'Status: mapped to evidence', {
+        what: 'A line from the "' + CC.CATS[r[0]] + '" part of the job description: ' + r[1],
+        how: r[2], where: r[3], uses: t.uses, examples: t.examples, deps: t.deps, inter: t.inter, when: t.when, future: t.future
+      });
+    });
+
+    function draw() {
+      var q = query.toLowerCase();
+      var html = '';
+      CC.REQS.forEach(function (r, i) {
+        if (cat !== 'all' && r[0] !== cat) { return; }
+        if (q && (r[1] + ' ' + r[2] + ' ' + r[3]).toLowerCase().indexOf(q) === -1) { return; }
+        var ver = r[4] === 'verify';
+        html += '<tr class="rowlink" tabindex="0" role="button" data-id="req-' + i + '"><td class="cat">' + esc(CC.CATS[r[0]]) + '</td><td>' + esc(r[1]) +
+          '</td><td class="dim">' + esc(r[2]) + '</td><td><span class="pill ' + (ver ? 'warn' : 'ok') + '">' + (ver ? 'Verify' : 'Mapped') + '</span></td></tr>';
+      });
+      tbody.innerHTML = html;
+      $('#xwEmpty').hidden = !!html;
+    }
+    filters.addEventListener('click', function (ev) {
+      var b = ev.target.closest('button[data-cat]');
+      if (!b) { return; }
+      cat = b.getAttribute('data-cat');
+      $$('button', filters).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      draw();
+    });
+    $('#xwSearch').addEventListener('input', function (ev) { query = ev.target.value.trim(); draw(); });
+    function rowOpen(ev) {
+      var tr = ev.target.closest('tr[data-id]');
+      if (tr) { window.UCS.open(tr.getAttribute('data-id')); }
+    }
+    tbody.addEventListener('click', rowOpen);
+    tbody.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); rowOpen(ev); }
+    });
+    draw();
+  })();
+
+  /* ------------------------------------------------------------------ tiles */
+  function tile(cls, id, inner) {
+    return '<div class="card clickable ' + cls + '" role="button" tabindex="0" data-open="' + id + '">' + inner + '<span class="more">Open detail →</span></div>';
+  }
+  function wireTiles(root) {
+    $$('[data-open]', root).forEach(function (el) {
+      bindOpen(el, function () { window.UCS.open(el.getAttribute('data-open')); });
+    });
+  }
+
+  (function buildPlatforms() {
+    $('#platformGrid').innerHTML = CC.PLATFORMS.map(function (p) {
+      register(p.id, 'Platform', p.name, p.tag + ' · ' + p.years, p.m);
+      return tile('c3', p.id, '<h3>' + esc(p.name) + '</h3><p class="note">' + esc(p.tag) + '</p><p><span class="pill ok">' + esc(p.years) + '</span></p>' +
+        '<div class="tags">' + p.caps.map(function (c) { return '<span class="tag">' + esc(c) + '</span>'; }).join('') + '</div>');
+    }).join('');
+    wireTiles($('#platformGrid'));
+  })();
+
+  (function buildLifecycle() {
+    $('#lifecycleSteps').innerHTML = CC.LIFECYCLE.map(function (s) {
+      register(s.id, 'Delivery lifecycle', s.name, s.line, s.m);
+      return '<div class="card step clickable" role="button" tabindex="0" data-open="' + s.id + '"><h3>' + esc(s.name) + '</h3><p>' + esc(s.line) + '</p><span class="more">Open detail →</span></div>';
+    }).join('');
+    wireTiles($('#lifecycleSteps'));
+  })();
+
+  (function buildAgentic() {
+    $('#agenticGrid').innerHTML = CC.AGENTIC.map(function (a) {
+      register(a.id, 'Agentic integration · ' + a.vendor, a.name, a.line, a.m);
+      return tile('c3', a.id, '<p class="note">' + esc(a.vendor) + '</p><h3>' + esc(a.name) + '</h3><p>' + esc(a.line) + '</p>');
+    }).join('');
+    wireTiles($('#agenticGrid'));
+  })();
+
+  (function buildControls() {
+    var tb = $('#ctlTable tbody');
+    tb.innerHTML = CC.CONTROLS.map(function (c) {
+      register(c.id, 'Enterprise AI control', c.name, c.fw, c.m);
+      return '<tr class="rowlink" tabindex="0" role="button" data-open="' + c.id + '"><td><strong>' + esc(c.name) + '</strong></td><td class="dim">' + esc(c.risk) +
+        '</td><td>' + esc(c.layer) + '</td><td class="dim">' + esc(c.fw) + '</td></tr>';
+    }).join('');
+    wireTiles(tb);
+  })();
+
+  /* ------------------------------------------------------------------ AI use cases */
+  (function buildUseCases() {
+    var tabs = $('#ucTabs');
+    var detail = $('#ucDetail');
+    CC.USECASES.forEach(function (u) { register(u.id, 'AI integration pattern', u.name, u.line, u.m); });
+    tabs.innerHTML = CC.USECASES.map(function (u, i) {
+      return '<button type="button" class="fbtn" role="tab" data-i="' + i + '" aria-selected="' + (i === 0) + '" aria-pressed="' + (i === 0) + '">' + esc(u.name) + '</button>';
+    }).join('');
+    function show(i) {
+      var u = CC.USECASES[i];
+      var flow = u.flow.map(function (n, k) {
+        return (k ? '<span class="flow-arrow" aria-hidden="true">→</span>' : '') + '<div class="flow-node ' + n[2] + '"><b>' + esc(n[0]) + '</b><span>' + esc(n[1]) + '</span></div>';
+      }).join('');
+      detail.innerHTML = '<h3>' + esc(u.name) + '</h3><p class="sec-lede" style="margin-bottom:4px">' + esc(u.line) + '</p>' +
+        '<div class="flow" aria-label="Flow">' + flow + '</div>' +
+        '<div class="grid"><div class="c4"><h4>Boomi building blocks</h4><ul class="tight">' + u.blocks.map(function (b) { return '<li>' + esc(b) + '</li>'; }).join('') + '</ul></div>' +
+        '<div class="c4"><h4>Controls</h4><ul class="tight">' + u.controls.map(function (b) { return '<li>' + esc(b) + '</li>'; }).join('') + '</ul>' +
+        '<h4>Techniques</h4><div class="tags">' + u.tech.map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join('') + '</div></div>' +
+        '<div class="c4"><h4>Example request (illustrative)</h4><pre class="code">' + esc(u.payload) + '</pre></div></div>' +
+        '<p style="margin:12px 0 0"><button type="button" class="btn" data-open="' + u.id + '">Open nine-part detail</button></p>';
+      wireTiles(detail);
+      $$('button', tabs).forEach(function (b, k) {
+        b.setAttribute('aria-selected', k === i ? 'true' : 'false');
+        b.setAttribute('aria-pressed', k === i ? 'true' : 'false');
+      });
+    }
+    tabs.addEventListener('click', function (ev) {
+      var b = ev.target.closest('button[data-i]');
+      if (b) { show(+b.getAttribute('data-i')); }
+    });
+    show(0);
+
+    var head = '<thead><tr><th>Use case</th>' + CC.TECHNIQUES.map(function (t) { return '<th class="rot">' + esc(t) + '</th>'; }).join('') + '</tr></thead>';
+    var rows = CC.USECASES.map(function (u) {
+      return '<tr class="rowlink" tabindex="0" role="button" data-open="' + u.id + '"><td>' + esc(u.name) + '</td>' + CC.TECHNIQUES.map(function (t) {
+        var hit = u.tech.indexOf(t) !== -1;
+        return '<td class="' + (hit ? 'hit' : 'miss') + '">' + (hit ? '✓' : '·') + '</td>';
+      }).join('') + '</tr>';
+    }).join('');
+    $('#ucMatrix').innerHTML = head + '<tbody>' + rows + '</tbody>';
+    wireTiles($('#ucMatrix'));
+  })();
+
+  /* ------------------------------------------------------------------ charts */
+  var charts = {};
+  function buildCharts() {
+    if (!window.Chart) {
+      $$('.chart-box').forEach(function (b) {
+        b.innerHTML = '<div class="chart-fallback">The chart library did not load (it comes from a CDN). The tables on this page carry the same figures.</div>';
+      });
+      return;
+    }
+    Object.keys(charts).forEach(function (k) { charts[k].destroy(); });
+    charts = {};
+    var C = window.Chart;
+    var text = cssVar('--text-dim');
+    var grid = cssVar('--border');
+    var a = cssVar('--accent');
+    var b = cssVar('--accent-2');
+    var c = cssVar('--accent-3');
+    var w = cssVar('--warn');
+    C.defaults.color = text;
+    C.defaults.borderColor = grid;
+    C.defaults.font.family = 'Inter, system-ui, sans-serif';
+    C.defaults.font.size = 12;
+    var anim = REDUCED ? false : { duration: 900 };
+    var legend = { position: 'bottom', labels: { boxWidth: 12, color: text } };
+    function axis(extra) {
+      var o = { grid: { color: grid }, ticks: { color: text } };
+      Object.keys(extra || {}).forEach(function (k) { o[k] = extra[k]; });
+      return o;
+    }
+
+    var keys = Object.keys(CC.CATS);
+    var mapped = keys.map(function (k) { return CC.REQS.filter(function (r) { return r[0] === k && r[4] !== 'verify'; }).length; });
+    var verify = keys.map(function (k) { return CC.REQS.filter(function (r) { return r[0] === k && r[4] === 'verify'; }).length; });
+    charts.coverage = new C($('#chartCoverage'), {
+      type: 'bar',
+      data: { labels: keys.map(function (k) { return CC.CATS[k]; }), datasets: [
+        { label: 'Mapped to evidence', data: mapped, backgroundColor: a, borderRadius: 5 },
+        { label: 'Verify before submission', data: verify, backgroundColor: w, borderRadius: 5 }] },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: anim, plugins: { legend: legend },
+        scales: { x: axis({ stacked: true, beginAtZero: true, ticks: { color: text, precision: 0 } }), y: axis({ stacked: true, grid: { display: false } }) } }
+    });
+
+    charts.experience = new C($('#chartExperience'), {
+      type: 'bar',
+      data: { labels: ['Overall integration / application development', 'Hands-on Boomi'], datasets: [
+        { label: 'Asked (upper end)', data: [8, 3], backgroundColor: w, borderRadius: 5 },
+        { label: 'Offered', data: [30, 8], backgroundColor: c, borderRadius: 5 }] },
+      options: { responsive: true, maintainAspectRatio: false, animation: anim, plugins: { legend: legend },
+        scales: { x: axis({ grid: { display: false } }), y: axis({ beginAtZero: true, title: { display: true, text: 'Years', color: text } }) } }
+    });
+
+    charts.tech = new C($('#chartTech'), {
+      type: 'bar',
+      data: { labels: CC.TECHNIQUES, datasets: [{ label: 'Use cases using it (of 6)',
+        data: CC.TECHNIQUES.map(function (t) { return CC.USECASES.filter(function (u) { return u.tech.indexOf(t) !== -1; }).length; }),
+        backgroundColor: b, borderRadius: 5 }] },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, animation: anim, plugins: { legend: legend },
+        scales: { x: axis({ beginAtZero: true, max: 6, ticks: { color: text, precision: 0 } }), y: axis({ grid: { display: false } }) } }
+    });
+  }
+  buildCharts();
+  themeListeners.push(buildCharts);
+
+  /* ------------------------------------------------------------------ simulator */
+  (function buildSimulator() {
+    var sel = 0;
+    var timers = [];
+    var LABEL = { ok: 'Passed', warn: 'Handled', crit: 'Failed', idle: 'Skipped', run: 'Running' };
+    var box = $('#simSteps');
+    var log = $('#simLog');
+    var result = $('#simResult');
+    var scen = $('#simScenarios');
+    scen.innerHTML = CC.SIMS.map(function (s, i) {
+      return '<button type="button" class="fbtn" data-i="' + i + '" aria-pressed="' + (i === 0) + '">' + esc(s.name) + '</button>';
+    }).join('');
+    function reset() {
+      timers.forEach(window.clearTimeout);
+      timers = [];
+      box.innerHTML = CC.SIM_STEPS.map(function (n) {
+        return '<div class="sim-step"><b>' + esc(n) + '</b><span class="pill idle">Waiting</span><small></small></div>';
+      }).join('');
+      log.textContent = 'Scenario: ' + CC.SIMS[sel].name + '. Select Run scenario.';
+      result.className = 'pill idle';
+      result.textContent = 'Not run';
+      $('#simRun').disabled = false;
+    }
+    function setStep(i, status, msg) {
+      var el = box.children[i];
+      el.className = 'sim-step is-' + status;
+      var pill = $('.pill', el);
+      pill.className = 'pill ' + status;
+      pill.textContent = LABEL[status];
+      $('small', el).textContent = msg || '';
+    }
+    function run() {
+      reset();
+      var s = CC.SIMS[sel];
+      var gap = REDUCED ? 0 : 620;
+      var lines = ['Scenario: ' + s.name];
+      $('#simRun').disabled = true;
+      result.className = 'pill run';
+      result.textContent = 'Running';
+      s.steps.forEach(function (st, i) {
+        timers.push(window.setTimeout(function () { setStep(i, 'run', ''); }, i * gap));
+        timers.push(window.setTimeout(function () {
+          setStep(i, st[0], st[1]);
+          lines.push('[' + (i + 1) + '] ' + CC.SIM_STEPS[i] + ' — ' + LABEL[st[0]].toUpperCase() + ': ' + st[1]);
+          log.textContent = lines.join('\n');
+          if (i === s.steps.length - 1) {
+            result.className = 'pill ' + s.result[0];
+            result.textContent = s.result[1];
+            lines.push('Result: ' + s.result[1]);
+            log.textContent = lines.join('\n');
+            $('#simRun').disabled = false;
+          }
+        }, i * gap + gap * 0.6));
+      });
+    }
+    scen.addEventListener('click', function (ev) {
+      var b = ev.target.closest('button[data-i]');
+      if (!b) { return; }
+      sel = +b.getAttribute('data-i');
+      $$('button', scen).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      reset();
+    });
+    $('#simRun').addEventListener('click', run);
+    $('#simReset').addEventListener('click', reset);
+    reset();
+  })();
+
+  /* ------------------------------------------------------------------ checklist */
+  (function buildChecklist() {
+    var state = {};
+    try { state = JSON.parse(store.get(CHK_KEY) || '{}') || {}; } catch (e) { state = {}; }
+    var grid = $('#chkGrid');
+    var total = 0;
+    grid.innerHTML = CC.CHECKLIST.map(function (g, gi) {
+      return '<div class="card c4 chk-group"><h3>' + esc(g[0]) + '</h3>' + g[1].map(function (it, ii) {
+        total += 1;
+        var key = gi + '-' + ii;
+        return '<label class="chk-item' + (state[key] ? ' done' : '') + '"><input type="checkbox" data-key="' + key + '"' + (state[key] ? ' checked' : '') + '><span>' + esc(it) + '</span></label>';
+      }).join('') + '</div>';
+    }).join('');
+    function paint() {
+      var done = $$('input:checked', grid).length;
+      var pill = $('#chkPill');
+      pill.textContent = done + ' of ' + total + ' complete';
+      pill.className = 'pill ' + (done === total ? 'ok' : (done ? 'warn' : 'idle'));
+      $('#chkBar').style.width = Math.round(done / total * 100) + '%';
+    }
+    grid.addEventListener('change', function (ev) {
+      var cb = ev.target;
+      if (!cb.matches('input[data-key]')) { return; }
+      state[cb.getAttribute('data-key')] = cb.checked;
+      cb.parentNode.classList.toggle('done', cb.checked);
+      store.set(CHK_KEY, JSON.stringify(state));
+      paint();
+    });
+    $('#chkReset').addEventListener('click', function () {
+      state = {};
+      store.set(CHK_KEY, '{}');
+      $$('input', grid).forEach(function (cb) { cb.checked = false; cb.parentNode.classList.remove('done'); });
+      $('#chkMsg').textContent = 'Cleared.';
+      paint();
+    });
+    $('#chkCopy').addEventListener('click', function () {
+      var md = '# Deployment checklist\n\n' + CC.CHECKLIST.map(function (g, gi) {
+        return '## ' + g[0] + '\n' + g[1].map(function (it, ii) { return '- [' + (state[gi + '-' + ii] ? 'x' : ' ') + '] ' + it; }).join('\n');
+      }).join('\n\n') + '\n';
+      var msg = $('#chkMsg');
+      function fallback() {
+        var ta = document.createElement('textarea');
+        ta.value = md;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        var ok = false;
+        try { ok = document.execCommand('copy'); } catch (e) { ok = false; }
+        document.body.removeChild(ta);
+        msg.textContent = ok ? 'Copied as Markdown.' : 'Copy is blocked in this browser.';
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(md).then(function () { msg.textContent = 'Copied as Markdown.'; }, fallback);
+      } else { fallback(); }
+    });
+    paint();
+  })();
+
+  /* ------------------------------------------------------------------ plan, Q&A, sources */
+  $('#planGrid').innerHTML = CC.PLAN.map(function (p) {
+    return '<div class="card"><div class="sec-kicker">' + esc(p[0]) + '</div><h3 style="margin-top:4px">' + esc(p[1]) + '</h3><ul class="tight">' +
+      p[2].map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>';
+  }).join('');
+  $('#qaList').innerHTML = CC.QA.map(function (q) {
+    return '<details class="qa"><summary>' + esc(q[0]) + '</summary><div class="qa-body">' + esc(q[1]) + '</div></details>';
+  }).join('');
+  $('#srcList').innerHTML = CC.SOURCES.map(function (s) {
+    return '<li><a href="' + esc(s[1]) + '" target="_blank" rel="noopener noreferrer">' + esc(s[0]) + '</a></li>';
+  }).join('');
+
+  /* ------------------------------------------------------------------ 3D topology (Three.js r128) */
+  (function buildTopology() {
+    var host = $('#topo');
+    var T = CC.TOPO;
+    $('#topoLegend').innerHTML = Object.keys(T.kinds).map(function (k) {
+      return '<span><i style="background:' + T.kinds[k][1] + '"></i>' + esc(T.kinds[k][0]) + '</span>';
+    }).join('');
+
+    function fallback() {
+      host.style.height = 'auto';
+      host.style.cursor = 'default';
+      host.innerHTML = '<div style="padding:16px"><p class="note">The 3D map needs WebGL and the Three.js CDN. The same nodes are listed here.</p><div class="tags">' +
+        T.nodes.map(function (n) {
+          return '<span class="tag clickable" style="width:auto;display:inline-block" role="button" tabindex="0" data-open="' + n.ref + '">' + esc(n.label) + '</span>';
+        }).join('') + '</div></div>';
+      wireTiles(host);
+    }
+    if (!window.THREE) { fallback(); return; }
+    var THREE = window.THREE;
+    var renderer;
+    try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); } catch (e) { fallback(); return; }
+    if (!renderer.getContext()) { fallback(); return; }
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    host.insertBefore(renderer.domElement, host.firstChild);
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+    var CAM = new THREE.Vector3(0, 9.4, 11.6);
+    camera.position.copy(CAM);
+    camera.lookAt(0, -1.3, 0);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+    var sun = new THREE.DirectionalLight(0xffffff, 0.75);
+    sun.position.set(4, 8, 6);
+    scene.add(sun);
+    var group = new THREE.Group();
+    scene.add(group);
+
+    var radii = [0, 3.0, 5.6];
+    var heights = [2.2, 0.3, -0.6];
+    var sizes = [0.56, 0.42, 0.34];
+    var byRing = {};
+    T.nodes.forEach(function (n) { (byRing[n.ring] = byRing[n.ring] || []).push(n); });
+    var pos = {};
+    var meshes = [];
+    var labels = [];
+    Object.keys(byRing).forEach(function (r) {
+      byRing[r].forEach(function (n, i) {
+        var ang = (i / byRing[r].length) * Math.PI * 2 + (+r === 2 ? 0.35 : 0.9);
+        pos[n.id] = new THREE.Vector3(Math.cos(ang) * radii[r], heights[r], Math.sin(ang) * radii[r]);
+        var col = new THREE.Color(T.kinds[n.kind][1]);
+        var mesh = new THREE.Mesh(new THREE.SphereGeometry(sizes[r], 28, 20),
+          new THREE.MeshStandardMaterial({ color: col, emissive: col, emissiveIntensity: 0.32, roughness: 0.38, metalness: 0.15 }));
+        mesh.position.copy(pos[n.id]);
+        mesh.userData = n;
+        group.add(mesh);
+        meshes.push(mesh);
+        var lab = document.createElement('div');
+        lab.className = 'topo-label';
+        lab.textContent = n.label;
+        host.appendChild(lab);
+        labels.push([lab, mesh]);
+      });
+    });
+    var lineMat = new THREE.LineBasicMaterial({ color: new THREE.Color(cssVar('--text-faint') || '#7f8db0'), transparent: true, opacity: 0.55 });
+    T.links.forEach(function (l) {
+      group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pos[l[0]], pos[l[1]]]), lineMat));
+    });
+    var ringMat = new THREE.LineBasicMaterial({ color: new THREE.Color(cssVar('--text-faint') || '#7f8db0'), transparent: true, opacity: 0.22 });
+    [1, 2].forEach(function (r) {
+      var pts = [];
+      for (var k = 0; k <= 96; k += 1) {
+        var t = (k / 96) * Math.PI * 2;
+        pts.push(new THREE.Vector3(Math.cos(t) * radii[r], heights[r], Math.sin(t) * radii[r]));
+      }
+      group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), ringMat));
+    });
+    themeListeners.push(function () {
+      lineMat.color.set(cssVar('--text-faint') || '#7f8db0');
+      ringMat.color.set(cssVar('--text-faint') || '#7f8db0');
+    });
+
+    var W = 0;
+    var H = 0;
+    var v = new THREE.Vector3();
+    var ready = false;
+    function resize() {
+      W = host.clientWidth;
+      H = host.clientHeight;
+      if (!W || !H) { return; }
+      renderer.setSize(W, H, false);
+      camera.aspect = W / H;
+      camera.position.copy(CAM).multiplyScalar(W < 560 ? 1.6 : (W < 900 ? 1.2 : 1));
+      camera.lookAt(0, -1.3, 0);
+      camera.updateProjectionMatrix();
+      if (ready && REDUCED) { draw(); }
+    }
+    resize();
+    if ('ResizeObserver' in window) { new ResizeObserver(resize).observe(host); } else { window.addEventListener('resize', resize); }
+
+    function draw() {
+      renderer.render(scene, camera);
+      labels.forEach(function (pair) {
+        pair[1].getWorldPosition(v);
+        var far = camera.position.distanceTo(v) > camera.position.length() + 1.2;
+        v.project(camera);
+        pair[0].style.left = ((v.x * 0.5 + 0.5) * W) + 'px';
+        pair[0].style.top = ((-v.y * 0.5 + 0.5) * H) + 'px';
+        pair[0].style.zIndex = String(Math.round((1 - v.z) * 1000));
+        pair[0].style.opacity = far ? (W < 560 ? '0' : '0.5') : '0.96';
+      });
+    }
+
+    var dragging = false;
+    var moved = 0;
+    var px = 0;
+    var py = 0;
+    var visible = true;
+    host.addEventListener('pointerdown', function (ev) {
+      dragging = true; moved = 0; px = ev.clientX; py = ev.clientY;
+      if (host.setPointerCapture) { try { host.setPointerCapture(ev.pointerId); } catch (e) { /* ignore */ } }
+    });
+    host.addEventListener('pointermove', function (ev) {
+      if (!dragging) { return; }
+      var dx = ev.clientX - px;
+      var dy = ev.clientY - py;
+      moved += Math.abs(dx) + Math.abs(dy);
+      group.rotation.y += dx * 0.008;
+      group.rotation.x = Math.max(-0.55, Math.min(0.45, group.rotation.x + dy * 0.005));
+      px = ev.clientX; py = ev.clientY;
+      if (REDUCED) { draw(); }
+    });
+    var ray = new THREE.Raycaster();
+    var ptr = new THREE.Vector2();
+    function pick(ev) {
+      var r = renderer.domElement.getBoundingClientRect();
+      ptr.x = ((ev.clientX - r.left) / r.width) * 2 - 1;
+      ptr.y = -((ev.clientY - r.top) / r.height) * 2 + 1;
+      ray.setFromCamera(ptr, camera);
+      var hit = ray.intersectObjects(meshes, false)[0];
+      return hit ? hit.object.userData : null;
+    }
+    host.addEventListener('pointerup', function (ev) {
+      var wasDrag = moved > 6;
+      dragging = false;
+      if (wasDrag) { return; }
+      var n = pick(ev);
+      if (n) { window.UCS.open(n.ref); }
+    });
+    host.addEventListener('pointerleave', function () { dragging = false; });
+    host.addEventListener('pointercancel', function () { dragging = false; });
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }, { threshold: 0.02 }).observe(host);
+    }
+    function loop() {
+      if (visible && W && H) {
+        if (!dragging && !REDUCED && !back.classList.contains('open')) { group.rotation.y += 0.0022; }
+        draw();
+      }
+      window.requestAnimationFrame(loop);
+    }
+    ready = true;
+    if (REDUCED) { draw(); themeListeners.push(draw); } else { loop(); }
+    window.UCS.topology = { nodes: T.nodes.length, links: T.links.length, renderer: 'webgl' };
+  })();
+
+  /* ------------------------------------------------------------------ mount reveal */
+  (function reveal() {
+    var els = $$('.reveal');
+    function showAll() { els.forEach(function (e) { e.classList.add('in'); }); }
+    if (REDUCED || !('IntersectionObserver' in window)) { showAll(); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.02 });
+    els.forEach(function (e, i) { e.style.transitionDelay = Math.min(i, 6) * 40 + 'ms'; io.observe(e); });
+    window.setTimeout(showAll, 2600);
+  })();
+})();
+</script>
+</body>
+</html>

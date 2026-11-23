@@ -1,0 +1,18 @@
+{
+  "name": "wipro-boomi-ai-integration-command-center",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Single-file command center for the Wipro Boomi Developer – AI & Intelligent Integration role.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "test": "node scripts/build.mjs && node scripts/check.mjs",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "Kenneth P. Barnes · UCS Solutions",
+  "license": "UNLICENSED"
+}
